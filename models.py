@@ -1,26 +1,51 @@
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, DateTime
 from sqlalchemy.orm import relationship
 
 from .database import Base
 
+#NIEDZ 15.09.2024
 
 class User(Base):
     __tablename__ = "users"
 
-    id = Column(Integer, primary_key=True)
-    email = Column(String, unique=True, index=True)
+    user_id = Column(Integer, primary_key=True)
+    login = Column(String(50), unique=True)
     hashed_password = Column(String)
-    is_active = Column(Boolean, default=True)
 
-    items = relationship("Item", back_populates="owner")
+    events = relationship("Event", back_populates="organizer")
 
 
-class Item(Base):
-    __tablename__ = "items"
+class Event(Base):
+    __tablename__ = "events"
 
-    id = Column(Integer, primary_key=True)
-    title = Column(String, index=True)
-    description = Column(String, index=True)
-    owner_id = Column(Integer, ForeignKey("users.id"))
+    event_id = Column(Integer, primary_key=True)
+    name = Column(String)
+    start_time = Column(DateTime)
+    location = Column(String)
+    description = Column(String)
+    menu = Column(String)
+    decision_deadline = Column(DateTime)
+    organizer_id = Column(Integer, ForeignKey("users.user_id"))
 
-    owner = relationship("User", back_populates="items")
+    organizer = relationship("User", back_populates="events")
+    guests = relationship("Guest", back_populates="event")
+
+class Guest(Base):
+    __tablename__ = "guests"
+
+    guest_id = Column(Integer, primary_key=True)
+    event_id = Column(Integer, ForeignKey("events.event_id"))
+    name = Column(String)
+    surname = Column(String)
+    email = Column(String)
+    phone = Column(String(20))
+    answer = Column(Boolean)
+    menu = Column(String)
+    comments = Column(String)
+
+    companion_id = Column(Integer, ForeignKey("guests.guest_id"))    
+
+    event = relationship("Event", back_populates="guests")
+    #companion = relationship("Guest")
+
+

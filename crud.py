@@ -33,7 +33,8 @@ def get_events(db: Session, skip: int = 0, limit: int = 100):
 
 
 def create_event(db:Session, event: schemas.EventCreate, user_id: int):
-    db_event = models.Event(**event.model_dump(), organizer_id=user_id)
+    db_event = models.Event(**event.model_dump())
+    db_event.organizer_id = user_id
     db.add(db_event)
     db.commit()
     db.refresh(db_event)

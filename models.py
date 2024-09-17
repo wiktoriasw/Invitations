@@ -9,7 +9,7 @@ class User(Base):
     __tablename__ = "users"
 
     user_id = Column(Integer, primary_key=True)
-    login = Column(String(50), unique=True)
+    email = Column(String(50), unique=True)
     hashed_password = Column(String)
 
     events = relationship("Event", back_populates="organizer")

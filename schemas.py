@@ -20,10 +20,10 @@ class Event(EventBase):
     event_id: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class UserBase(BaseModel):
-    login: str
+    email: str
 
 
 class UserCreate(UserBase):
@@ -35,7 +35,7 @@ class User(UserBase):
     events: list[Event] = []
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class GuestBase(BaseModel):
@@ -58,4 +58,4 @@ class Guest(GuestBase):
     guest_id: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True

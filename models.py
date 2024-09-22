@@ -3,7 +3,8 @@ from sqlalchemy.orm import relationship
 
 from .database import Base
 
-#NIEDZ 15.09.2024
+# NIEDZ 15.09.2024
+
 
 class User(Base):
     __tablename__ = "users"
@@ -30,6 +31,7 @@ class Event(Base):
     organizer = relationship("User", back_populates="events")
     guests = relationship("Guest", back_populates="event")
 
+
 class Guest(Base):
     __tablename__ = "guests"
 
@@ -43,9 +45,7 @@ class Guest(Base):
     menu = Column(String)
     comments = Column(String)
 
-    companion_id = Column(Integer, ForeignKey("guests.guest_id"))    
+    companion_id = Column(Integer, ForeignKey("guests.guest_id"))
 
     event = relationship("Event", back_populates="guests")
-    #companion = relationship("Guest")
-
-
+    # companion = relationship("Guest")

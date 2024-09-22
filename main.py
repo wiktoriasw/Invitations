@@ -44,6 +44,7 @@ def read_user(user_id: int, db: Session = Depends(get_db)):
 def create_event(event: schemas.EventCreate, db: Session = Depends(get_db)):
     return crud.create_event(db=db, event=event, user_id=event.organizer_id)
 
+
 @app.get("/events", response_model=list[schemas.Event])
 def read_events(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     events = crud.get_events(db, skip=skip, limit=limit)
@@ -57,12 +58,15 @@ def read_event(event_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Event not found")
     return db_event
 
-#NIEDZ 22.09.2024
+
+# NIEDZ 22.09.2024
+
 
 @app.get("/guests", response_model=list[schemas.Guest])
 def read_guests(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     guests = crud.get_guests(db, skip=skip, limit=limit)
     return guests
+
 
 @app.get("/guests/{guest_id}", response_model=schemas.Guest)
 def read_guest(guest_id: int, db: Session = Depends(get_db)):
@@ -70,6 +74,7 @@ def read_guest(guest_id: int, db: Session = Depends(get_db)):
     if db_guest is None:
         raise HTTPException(status_code=404, detail="User not found")
     return db_guest
+
 
 @app.post("/guests", response_model=schemas.Guest)
 def create_eventguest(guest: schemas.GuestCreate, db: Session = Depends(get_db)):

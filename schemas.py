@@ -3,6 +3,7 @@ from datetime import datetime
 
 ## NIEDZ 15.09
 
+
 class EventBase(BaseModel):
     name: str
     description: str | None = None
@@ -16,11 +17,13 @@ class EventBase(BaseModel):
 class EventCreate(EventBase):
     pass
 
+
 class Event(EventBase):
     event_id: int
 
     class Config:
         from_attributes = True
+
 
 class UserBase(BaseModel):
     email: str
@@ -40,8 +43,8 @@ class User(UserBase):
 
 class GuestBase(BaseModel):
     event_id: int
-    name: str 
-    surname: str 
+    name: str
+    surname: str
     email: str
     phone: str
     answer: bool

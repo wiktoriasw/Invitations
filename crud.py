@@ -39,3 +39,19 @@ def create_event(db:Session, event: schemas.EventCreate, user_id: int):
     db.commit()
     db.refresh(db_event)
     return db_event
+
+# 22.09.2024
+
+def get_guest(db: Session, guest_id: int):
+    return db.query(models.Guest).filter(models.Guest.guest_id == guest_id).first()
+
+def get_guests(db: Session, skip: int = 0, limit: int = 100):
+    return db.query(models.Guest).offset(skip).limit(limit).all()
+
+def create_eventguest(db:Session, guest: schemas.GuestCreate):
+    db_guest = models.Guest(**guest.model_dump())
+    db.add(db_guest)
+    db.commit()
+    db.refresh(db_guest)
+    return db_guest
+

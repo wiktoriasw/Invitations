@@ -56,3 +56,21 @@ def read_event(event_id: int, db: Session = Depends(get_db)):
     if db_event is None:
         raise HTTPException(status_code=404, detail="Event not found")
     return db_event
+
+#NIEDZ 22.09.2024
+
+@app.get("/guests", response_model=list[schemas.Guest])
+def read_guests(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    guests = crud.get_guests(db, skip=skip, limit=limit)
+    return guests
+
+@app.get("/guests/{guest_id}", response_model=schemas.Guest)
+def read_guest(guest_id: int, db: Session = Depends(get_db)):
+    db_guest = crud.get_guest(db, guest_id=guest_id)
+    if db_guest is None:
+        raise HTTPException(status_code=404, detail="User not found")
+    return db_guest
+
+@app.post("/guests", response_model=schemas.Guest)
+def create_eventguest(guest: schemas.GuestCreate, db: Session = Depends(get_db)):
+    return crud.create_eventguest(db=db, guest=guest)

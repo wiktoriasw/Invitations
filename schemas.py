@@ -39,7 +39,6 @@ class User(UserBase):
 
 
 class GuestBase(BaseModel):
-    guest_id: int
     event_id: int
     name: str 
     surname: str 

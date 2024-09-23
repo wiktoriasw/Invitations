@@ -4,6 +4,15 @@ from sqlalchemy.orm import Session
 from . import crud, models, schemas
 from .database import SessionLocal, engine
 
+from sqlalchemy.engine import Engine
+from sqlalchemy import event
+
+@event.listens_for(Engine, "connect")
+def set_sqlite_pragma(dbapi_connection, connection_record):
+    cursor = dbapi_connection.cursor()
+    cursor.execute("PRAGMA foreign_keys=ON")
+    cursor.close()
+
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
@@ -77,5 +86,5 @@ def read_guest(guest_id: int, db: Session = Depends(get_db)):
 
 
 @app.post("/guests", response_model=schemas.Guest)
-def create_eventguest(guest: schemas.GuestCreate, db: Session = Depends(get_db)):
-    return crud.create_eventguest(db=db, guest=guest)
+def create_event_guest(guest: schemas.GuestCreate, db: Session = Depends(get_db)):
+    return crud.create_event_guest(db=db, guest=guest)

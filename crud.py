@@ -52,7 +52,7 @@ def get_guests(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.Guest).offset(skip).limit(limit).all()
 
 
-def create_eventguest(db: Session, guest: schemas.GuestCreate):
+def create_event_guest(db: Session, guest: schemas.GuestCreate):
     db_guest = models.Guest(**guest.model_dump())
     db.add(db_guest)
     db.commit()

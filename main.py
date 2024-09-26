@@ -1,11 +1,15 @@
-from fastapi import Depends, FastAPI, HTTPException
+from typing import Annotated
+
+from fastapi import Depends, FastAPI, HTTPException, status
+from fastapi.security import OAuth2PasswordRequestForm
+from sqlalchemy import event
+from sqlalchemy.engine import Engine
 from sqlalchemy.orm import Session
 
-from . import crud, models, schemas
-from .database import SessionLocal, engine
+from . import crud, models, schemas, utils
+from .database import engine
+from .utils import get_db
 
-from sqlalchemy.engine import Engine
-from sqlalchemy import event
 
 @event.listens_for(Engine, "connect")
 def set_sqlite_pragma(dbapi_connection, connection_record):
@@ -13,18 +17,10 @@ def set_sqlite_pragma(dbapi_connection, connection_record):
     cursor.execute("PRAGMA foreign_keys=ON")
     cursor.close()
 
+
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
-
-
-# Dependency
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
 
 
 @app.post("/users", response_model=schemas.User)
@@ -39,6 +35,13 @@ def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
 def read_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     users = crud.get_users(db, skip=skip, limit=limit)
     return users
+
+
+@app.get("/users/me")
+def read_users_me(
+    current_user: Annotated[schemas.User, Depends(utils.get_current_user)]
+) -> schemas.User:
+    return current_user
 
 
 @app.get("/users/{user_id}", response_model=schemas.User)
@@ -88,3 +91,31 @@ def read_guest(guest_id: int, db: Session = Depends(get_db)):
 @app.post("/guests", response_model=schemas.Guest)
 def create_event_guest(guest: schemas.GuestCreate, db: Session = Depends(get_db)):
     return crud.create_event_guest(db=db, guest=guest)
+
+
+@app.get("/items/")
+async def read_items(token: Annotated[str, Depends(utils.oauth2_scheme)]):
+    return {"token": token}
+
+
+@app.post("/token")
+async def login_for_access_token(
+    form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
+    db: Session = Depends(get_db),
+) -> schemas.Token:
+    user = utils.authenticate_user(form_data, db)
+
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect username or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    access_token = utils.create_access_token(
+        data={
+            "sub": user.email,
+            "user_id": user.user_id,
+        },
+    )
+    return schemas.Token(access_token=access_token, token_type="bearer")

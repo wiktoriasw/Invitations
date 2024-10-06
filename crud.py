@@ -1,4 +1,6 @@
 from sqlalchemy.orm import Session
+from sqlalchemy import text
+from .database import engine
 
 from . import models, schemas, utils
 
@@ -41,9 +43,6 @@ def create_event(db: Session, event: schemas.EventCreate, user_id: int):
     return db_event
 
 
-# 22.09.2024
-
-
 def get_guest(db: Session, guest_id: int):
     return db.query(models.Guest).filter(models.Guest.guest_id == guest_id).first()
 
@@ -59,6 +58,6 @@ def create_event_guest(db: Session, guest: schemas.GuestCreate):
     db.refresh(db_guest)
     return db_guest
 
-
-# 22.09.2024
-# pomyliłam się z nazwą commitu dla crud, dałam jak dla main
+def reset_tables(db: Session):
+    models.Base.metadata.drop_all(bind=engine)
+    models.Base.metadata.create_all(bind=engine)

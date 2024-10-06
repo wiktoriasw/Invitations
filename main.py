@@ -53,8 +53,13 @@ def read_user(user_id: int, db: Session = Depends(get_db)):
 
 
 @app.post("/events", response_model=schemas.Event)
-def create_event(event: schemas.EventCreate, db: Session = Depends(get_db)):
-    return crud.create_event(db=db, event=event, user_id=event.organizer_id)
+def create_event(
+    event: schemas.EventCreate,
+    current_user: Annotated[schemas.User, Depends(utils.get_current_user)],
+    db: Session = Depends(get_db),
+):
+
+    return crud.create_event(db=db, event=event, user_id=current_user.user_id)
 
 
 @app.get("/events", response_model=list[schemas.Event])
@@ -69,9 +74,6 @@ def read_event(event_id: int, db: Session = Depends(get_db)):
     if db_event is None:
         raise HTTPException(status_code=404, detail="Event not found")
     return db_event
-
-
-# NIEDZ 22.09.2024
 
 
 @app.get("/guests", response_model=list[schemas.Guest])
@@ -89,13 +91,23 @@ def read_guest(guest_id: int, db: Session = Depends(get_db)):
 
 
 @app.post("/guests", response_model=schemas.Guest)
-def create_event_guest(guest: schemas.GuestCreate, db: Session = Depends(get_db)):
+def create_event_guest(
+    guest: schemas.GuestCreate,
+    current_user: Annotated[schemas.User, Depends(utils.get_current_user)],
+    db: Session = Depends(get_db)):
+    # wymaganie logowania
+
+    event = crud.get_event(db, guest.event_id)
+
+    # czy event istnieje - 404
+    if event is None:
+        raise HTTPException(status_code=404, detail="Event not found")
+
+    # czy current user jest organizatorem - 401
+    if current_user.user_id != event.organizer_id:
+        raise HTTPException(status_code=401, detail="Unauthorized")
+
     return crud.create_event_guest(db=db, guest=guest)
-
-
-@app.get("/items/")
-async def read_items(token: Annotated[str, Depends(utils.oauth2_scheme)]):
-    return {"token": token}
 
 
 @app.post("/token")
@@ -119,3 +131,7 @@ async def login_for_access_token(
         },
     )
     return schemas.Token(access_token=access_token, token_type="bearer")
+
+@app.post("/reset_tables")
+def reset_tables(db: Session = Depends(get_db)):
+    crud.reset_tables(db)

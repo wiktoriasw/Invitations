@@ -11,7 +11,6 @@ class EventBase(BaseModel):
     location: str
     menu: str
     decision_deadline: datetime
-    organizer_id: int
 
 
 class EventCreate(EventBase):
@@ -20,6 +19,7 @@ class EventCreate(EventBase):
 
 class Event(EventBase):
     event_id: int
+    organizer_id: int
 
     class Config:
         from_attributes = True

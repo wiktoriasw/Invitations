@@ -1,5 +1,6 @@
-from pydantic import BaseModel
 from datetime import datetime
+
+from pydantic import BaseModel
 
 ## NIEDZ 15.09
 
@@ -20,6 +21,7 @@ class EventCreate(EventBase):
 class Event(EventBase):
     event_id: int
     organizer_id: int
+    uuid: str
 
     class Config:
         from_attributes = True
@@ -51,22 +53,27 @@ class User(UserBase):
 
 
 class GuestBase(BaseModel):
-    event_id: int
     name: str
     surname: str
     email: str
     phone: str
-    answer: bool
-    menu: str
-    comments: str
+
+
+class GuestAnswear(BaseModel):
+    answear: bool
 
 
 class GuestCreate(GuestBase):
-    pass
+    event_uuid: str
 
 
 class Guest(GuestBase):
-    guest_id: int
+    uuid: str
 
     class Config:
         from_attributes = True
+
+
+# Zadanie z gwiazdką
+# zapisz odpowiedź gościa post guest_answear
+# @app.post("/guests/{guest_uuid}/answear")

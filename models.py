@@ -1,7 +1,11 @@
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, DateTime
+import uuid
+
+from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
 
+from . import utils
 from .database import Base
+
 
 class User(Base):
     __tablename__ = "users"
@@ -17,6 +21,7 @@ class Event(Base):
     __tablename__ = "events"
 
     event_id = Column(Integer, primary_key=True)
+    uuid = Column(String, default=utils.get_uuid4)
     name = Column(String)
     start_time = Column(DateTime)
     location = Column(String)
@@ -33,6 +38,7 @@ class Guest(Base):
     __tablename__ = "guests"
 
     guest_id = Column(Integer, primary_key=True)
+    uuid = Column(String, default=utils.get_uuid4)
     event_id = Column(Integer, ForeignKey("events.event_id"))
     name = Column(String)
     surname = Column(String)

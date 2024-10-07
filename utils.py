@@ -1,3 +1,4 @@
+import uuid
 from datetime import datetime, timedelta, timezone
 from typing import Annotated
 
@@ -83,3 +84,7 @@ def get_current_user(
         raise credentials_exception
 
     return user
+
+
+def get_uuid4():
+    return str(uuid.uuid4())

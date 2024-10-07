@@ -68,9 +68,9 @@ def read_events(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     return events
 
 
-@app.get("/events/{event_id}", response_model=schemas.Event)
-def read_event(event_id: int, db: Session = Depends(get_db)):
-    db_event = crud.get_event(db, event_id=event_id)
+@app.get("/events/{event_uuid}", response_model=schemas.Event)
+def read_event(event_uuid: str, db: Session = Depends(get_db)):
+    db_event = crud.get_event(db, event_uuid=event_uuid)
     if db_event is None:
         raise HTTPException(status_code=404, detail="Event not found")
     return db_event
@@ -82,9 +82,9 @@ def read_guests(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     return guests
 
 
-@app.get("/guests/{guest_id}", response_model=schemas.Guest)
-def read_guest(guest_id: int, db: Session = Depends(get_db)):
-    db_guest = crud.get_guest(db, guest_id=guest_id)
+@app.get("/guests/{guest_uuid}", response_model=schemas.Guest)
+def read_guest(guest_uuid: str, db: Session = Depends(get_db)):
+    db_guest = crud.get_guest(db, guest_uuid=guest_uuid)
     if db_guest is None:
         raise HTTPException(status_code=404, detail="User not found")
     return db_guest
@@ -94,20 +94,18 @@ def read_guest(guest_id: int, db: Session = Depends(get_db)):
 def create_event_guest(
     guest: schemas.GuestCreate,
     current_user: Annotated[schemas.User, Depends(utils.get_current_user)],
-    db: Session = Depends(get_db)):
-    # wymaganie logowania
+    db: Session = Depends(get_db),
+):
 
-    event = crud.get_event(db, guest.event_id)
+    event = crud.get_event(db, guest.event_uuid)
 
-    # czy event istnieje - 404
     if event is None:
         raise HTTPException(status_code=404, detail="Event not found")
 
-    # czy current user jest organizatorem - 401
     if current_user.user_id != event.organizer_id:
         raise HTTPException(status_code=401, detail="Unauthorized")
 
-    return crud.create_event_guest(db=db, guest=guest)
+    return crud.create_event_guest(db=db, guest=guest, event_id=event.event_id)
 
 
 @app.post("/token")
@@ -131,6 +129,7 @@ async def login_for_access_token(
         },
     )
     return schemas.Token(access_token=access_token, token_type="bearer")
+
 
 @app.post("/reset_tables")
 def reset_tables(db: Session = Depends(get_db)):

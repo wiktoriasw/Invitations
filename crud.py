@@ -1,8 +1,8 @@
-from sqlalchemy.orm import Session
 from sqlalchemy import text
-from .database import engine
+from sqlalchemy.orm import Session
 
 from . import models, schemas, utils
+from .database import engine
 
 
 def get_user(db: Session, user_id: int):
@@ -26,8 +26,8 @@ def create_user(db: Session, user: schemas.UserCreate):
     return db_user
 
 
-def get_event(db: Session, event_id: int):
-    return db.query(models.Event).filter(models.Event.event_id == event_id).first()
+def get_event(db: Session, event_uuid: str):
+    return db.query(models.Event).filter(models.Event.uuid == event_uuid).first()
 
 
 def get_events(db: Session, skip: int = 0, limit: int = 100):
@@ -43,20 +43,25 @@ def create_event(db: Session, event: schemas.EventCreate, user_id: int):
     return db_event
 
 
-def get_guest(db: Session, guest_id: int):
-    return db.query(models.Guest).filter(models.Guest.guest_id == guest_id).first()
+def get_guest(db: Session, guest_uuid: str):
+    return db.query(models.Guest).filter(models.Guest.uuid == guest_uuid).first()
 
 
 def get_guests(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.Guest).offset(skip).limit(limit).all()
 
 
-def create_event_guest(db: Session, guest: schemas.GuestCreate):
-    db_guest = models.Guest(**guest.model_dump())
+def create_event_guest(db: Session, guest: schemas.GuestCreate, event_id: int):
+    g = guest.model_dump()
+    del g["event_uuid"]
+    g["event_id"] = event_id
+
+    db_guest = models.Guest(**g)
     db.add(db_guest)
     db.commit()
     db.refresh(db_guest)
     return db_guest
+
 
 def reset_tables(db: Session):
     models.Base.metadata.drop_all(bind=engine)

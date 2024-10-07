@@ -4,59 +4,41 @@
       "name": "Karolina",
       "surname": "Kowalska",
       "email": "karkowal@gmail.com",
-      "phone": "+48765456384",
-      "answer": true,
-      "menu": "wege",
-      "comments": "nie mog\u0119 si\u0119 doczeka\u0107"
+      "phone": "+48765456384"
     },
     {
       "event_id": 2,
       "name": "Micha\u0142",
       "surname": "Nowak",
       "email": "michalnowak@gmail.com",
-      "phone": "+48783467582",
-      "answer": true,
-      "menu": "mi\u0119sne",
-      "comments": "super wydarzenie"
+      "phone": "+48783467582"
     },
     {
       "event_id": 3,
       "name": "Anna",
       "surname": "Zieli\u0144ska",
       "email": "annazielinska@gmail.com",
-      "phone": "+48789456123",
-      "answer": false,
-      "menu": "brak",
-      "comments": "Niestety nie mog\u0119 przyj\u015b\u0107"
+      "phone": "+48789456123"
     },
     {
       "event_id": 4,
       "name": "Tomasz",
       "surname": "Lewandowski",
       "email": "tomaszlewandowski@gmail.com",
-      "phone": "+48573498267",
-      "answer": true,
-      "menu": "wege",
-      "comments": "Czekam z niecierpliwo\u015bci\u0105"
+      "phone": "+48573498267"
     },
     {
       "event_id": 5,
       "name": "Ewa",
       "surname": "Wi\u015bniewska",
       "email": "ewawisniewska@gmail.com",
-      "phone": "+48789734561",
-      "answer": true,
-      "menu": "mi\u0119sne",
-      "comments": "Bardzo fajny pomys\u0142"
+      "phone": "+48789734561"
     },
     {
       "event_id": 6,
       "name": "Krzysztof",
       "surname": "W\u00f3jcik",
       "email": "krzysztofwojcik@gmail.com",
-      "phone": "+48783567891",
-      "answer": false,
-      "menu": "brak",
-      "comments": "Z przykro\u015bci\u0105 odmawiam"
+      "phone": "+48783567891"
     }
   ]

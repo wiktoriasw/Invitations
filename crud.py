@@ -1,6 +1,7 @@
-from sqlalchemy import text
+from sqlalchemy import text, update
 from sqlalchemy.orm import Session
 
+from fastapi import HTTPException
 from . import models, schemas, utils
 from .database import engine
 
@@ -18,8 +19,8 @@ def get_users(db: Session, skip: int = 0, limit: int = 100):
 
 
 def create_user(db: Session, user: schemas.UserCreate):
-    fake_hashed_password = utils.get_password_hash(user.password)
-    db_user = models.User(email=user.email, hashed_password=fake_hashed_password)
+    hashed_password = utils.get_password_hash(user.password)
+    db_user = models.User(email=user.email, hashed_password=hashed_password)
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
@@ -43,6 +44,15 @@ def create_event(db: Session, event: schemas.EventCreate, user_id: int):
     return db_event
 
 
+def delete_event(db: Session, event_uuid: str):
+    db_event = db.query(models.Event).filter(models.Event.uuid == event_uuid).first()
+
+    db.delete(db_event)
+    db.commit()
+    
+    return db_event
+
+
 def get_guest(db: Session, guest_uuid: str):
     return db.query(models.Guest).filter(models.Guest.uuid == guest_uuid).first()
 
@@ -60,6 +70,15 @@ def create_event_guest(db: Session, guest: schemas.GuestCreate, event_id: int):
     db.add(db_guest)
     db.commit()
     db.refresh(db_guest)
+    return db_guest
+
+def update_guest_answear(db: Session, guest_uuid: str, guest_answer: schemas.GuestAnswear):
+    db_guest = db.query(models.Guest).filter(models.Guest.uuid == guest_uuid).first()
+    db_guest.answer = guest_answer.answer
+    
+    db.commit()
+    db.refresh(db_guest)
+   
     return db_guest
 
 

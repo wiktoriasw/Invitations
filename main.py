@@ -61,6 +61,17 @@ def create_event(
 
     return crud.create_event(db=db, event=event, user_id=current_user.user_id)
 
+@app.delete("/events/{event_uuid}", response_model = schemas.Event)
+def delete_event(
+    event_uuid: str,
+    current_user: Annotated[schemas.User, Depends(utils.get_current_user)],
+    db: Session = Depends(get_db)):
+
+    db_event = crud.get_event(db, event_uuid)
+    if not db_event or db_event.organizer_id != current_user.user_id:
+        raise HTTPException(status_code=404, detail="Event not found")
+
+    return crud.delete_event(db, event_uuid)
 
 @app.get("/events", response_model=list[schemas.Event])
 def read_events(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
@@ -96,7 +107,6 @@ def create_event_guest(
     current_user: Annotated[schemas.User, Depends(utils.get_current_user)],
     db: Session = Depends(get_db),
 ):
-
     event = crud.get_event(db, guest.event_uuid)
 
     if event is None:
@@ -106,6 +116,19 @@ def create_event_guest(
         raise HTTPException(status_code=401, detail="Unauthorized")
 
     return crud.create_event_guest(db=db, guest=guest, event_id=event.event_id)
+
+@app.post("/guests/{guest_uuid}/answer", response_model=schemas.Guest)
+def update_answear(
+    guest_uuid: str,
+    guest_answer: schemas.GuestAnswear,
+    db: Session = Depends(get_db),
+):
+    db_guest = crud.get_guest(db, guest_uuid)
+
+    if not db_guest:
+        raise HTTPException(status_code=404, detail="Guest not found")
+    
+    return crud.update_guest_answear(db, guest_uuid, guest_answer)
 
 
 @app.post("/token")

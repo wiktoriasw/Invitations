@@ -60,7 +60,7 @@ class GuestBase(BaseModel):
 
 
 class GuestAnswear(BaseModel):
-    answear: bool
+    answer: bool
 
 
 class GuestCreate(GuestBase):
@@ -69,11 +69,7 @@ class GuestCreate(GuestBase):
 
 class Guest(GuestBase):
     uuid: str
+    answer: bool | None
 
     class Config:
         from_attributes = True
-
-
-# Zadanie z gwiazdką
-# zapisz odpowiedź gościa post guest_answear
-# @app.post("/guests/{guest_uuid}/answear")

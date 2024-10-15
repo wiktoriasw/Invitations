@@ -61,17 +61,24 @@ def create_event(
 
     return crud.create_event(db=db, event=event, user_id=current_user.user_id)
 
-@app.delete("/events/{event_uuid}", response_model = schemas.Event)
+
+@app.delete("/events/{event_uuid}", response_model=schemas.Event)
 def delete_event(
     event_uuid: str,
     current_user: Annotated[schemas.User, Depends(utils.get_current_user)],
-    db: Session = Depends(get_db)):
+    db: Session = Depends(get_db),
+    skip: int = 0,
+    limit: int = 100,
+):
 
     db_event = crud.get_event(db, event_uuid)
     if not db_event or db_event.organizer_id != current_user.user_id:
         raise HTTPException(status_code=404, detail="Event not found")
 
+    crud.delete_participants_from_event(db, event_uuid, skip=skip, limit=limit)
+
     return crud.delete_event(db, event_uuid)
+
 
 @app.get("/events", response_model=list[schemas.Event])
 def read_events(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
@@ -101,6 +108,13 @@ def read_guest(guest_uuid: str, db: Session = Depends(get_db)):
     return db_guest
 
 
+@app.get("/events/{event_uuid}/guests", response_model=list[schemas.Guest])
+def read_guests_from_event(
+    event_uuid: str, skip: int = 0, limit: int = 100, db: Session = Depends(get_db)
+):
+    return crud.get_guests_from_event(db, event_uuid, skip=skip, limit=limit)
+
+
 @app.post("/guests", response_model=schemas.Guest)
 def create_event_guest(
     guest: schemas.GuestCreate,
@@ -117,6 +131,7 @@ def create_event_guest(
 
     return crud.create_event_guest(db=db, guest=guest, event_id=event.event_id)
 
+
 @app.post("/guests/{guest_uuid}/answer", response_model=schemas.Guest)
 def update_answear(
     guest_uuid: str,
@@ -127,7 +142,7 @@ def update_answear(
 
     if not db_guest:
         raise HTTPException(status_code=404, detail="Guest not found")
-    
+
     return crud.update_guest_answear(db, guest_uuid, guest_answer)
 
 

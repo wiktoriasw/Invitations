@@ -1,7 +1,7 @@
+from fastapi import HTTPException
 from sqlalchemy import text, update
 from sqlalchemy.orm import Session
 
-from fastapi import HTTPException
 from . import models, schemas, utils
 from .database import engine
 
@@ -49,8 +49,19 @@ def delete_event(db: Session, event_uuid: str):
 
     db.delete(db_event)
     db.commit()
-    
+
     return db_event
+
+
+def delete_participants_from_event(
+    db: Session, event_uuid: str, skip: int = 0, limit: int = 100
+):
+    event_guests = get_guests_from_event(db, event_uuid, skip=skip, limit=limit)
+
+    for guest in event_guests:
+        db.delete(guest)
+
+    db.commit()
 
 
 def get_guest(db: Session, guest_uuid: str):
@@ -59,6 +70,19 @@ def get_guest(db: Session, guest_uuid: str):
 
 def get_guests(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.Guest).offset(skip).limit(limit).all()
+
+
+def get_guests_from_event(
+    db: Session, event_uuid: str, skip: int = 0, limit: int = 100
+):
+    db_event = db.query(models.Event).filter(models.Event.uuid == event_uuid).first()
+    return (
+        db.query(models.Guest)
+        .filter(models.Guest.event_id == db_event.event_id)
+        .offset(skip)
+        .limit(limit)
+        .all()
+    )
 
 
 def create_event_guest(db: Session, guest: schemas.GuestCreate, event_id: int):
@@ -72,13 +96,16 @@ def create_event_guest(db: Session, guest: schemas.GuestCreate, event_id: int):
     db.refresh(db_guest)
     return db_guest
 
-def update_guest_answear(db: Session, guest_uuid: str, guest_answer: schemas.GuestAnswear):
+
+def update_guest_answear(
+    db: Session, guest_uuid: str, guest_answer: schemas.GuestAnswear
+):
     db_guest = db.query(models.Guest).filter(models.Guest.uuid == guest_uuid).first()
     db_guest.answer = guest_answer.answer
-    
+
     db.commit()
     db.refresh(db_guest)
-   
+
     return db_guest
 
 

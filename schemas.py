@@ -61,6 +61,7 @@ class GuestBase(BaseModel):
 
 class GuestAnswear(BaseModel):
     answer: bool
+    menu: str
 
 
 class GuestCreate(GuestBase):
@@ -70,6 +71,7 @@ class GuestCreate(GuestBase):
 class Guest(GuestBase):
     uuid: str
     answer: bool | None
+    menu: str | None
 
     class Config:
         from_attributes = True

@@ -98,10 +98,13 @@ def create_event_guest(db: Session, guest: schemas.GuestCreate, event_id: int):
 
 
 def update_guest_answear(
-    db: Session, guest_uuid: str, guest_answer: schemas.GuestAnswear
+    db: Session,
+    guest_uuid: str,
+    guest_answer: schemas.GuestAnswear,
 ):
     db_guest = db.query(models.Guest).filter(models.Guest.uuid == guest_uuid).first()
     db_guest.answer = guest_answer.answer
+    db_guest.menu = guest_answer.menu
 
     db.commit()
     db.refresh(db_guest)

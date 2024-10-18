@@ -4,7 +4,7 @@
         "description": "Om\u00f3wienie warunk\u00f3w wsp\u00f3\u0142pracy w restauracji",
         "start_time": "2024-12-05T14:00:00",
         "location": "Warszawa",
-        "menu": "Wegetaria\u0144skie",
+        "menu": "Wegetariańskie;Mięsne",
         "decision_deadline": "2024-11-28T12:00:00"
     },
     {
@@ -12,7 +12,7 @@
         "description": "Wigilijne spotkanie z zespo\u0142em",
         "start_time": "2024-12-20T18:00:00",
         "location": "Krak\u00f3w",
-        "menu": "Tradycyjna polska kuchnia",
+        "menu": "polskie;wloskie",
         "decision_deadline": "2024-12-10T18:00:00"
     },
     {
@@ -20,7 +20,7 @@
         "description": "Spotkanie bran\u017cowe dotycz\u0105ce nowoczesnych technologii",
         "start_time": "2024-11-25T09:00:00",
         "location": "Wroc\u0142aw",
-        "menu": "Bufet konferencyjny",
+        "menu": "Bufet;brak",
         "decision_deadline": "2024-11-18T12:00:00"
     },
     {
@@ -28,7 +28,7 @@
         "description": "Spotkanie ze znajomymi na wsp\u00f3lne granie",
         "start_time": "2024-10-15T18:30:00",
         "location": "Gda\u0144sk",
-        "menu": "Pizza i przek\u0105ski",
+        "menu": "Pizza;makaron",
         "decision_deadline": "2024-10-10T18:30:00"
     },
     {
@@ -36,15 +36,15 @@
         "description": "Nauka podstaw fotografii w plenerze",
         "start_time": "2024-09-30T10:00:00",
         "location": "Pozna\u0144",
-        "menu": "Lunch na miejscu",
+        "menu": "Ryba;schabowy",
         "decision_deadline": "2024-09-25T17:00:00"
     },
     {
         "name": "Warsztaty kulinarne",
         "description": "Nauka podstaw gotowania",
         "start_time": "2024-09-30T10:00:00",
-        "location": "Pozna\u0144",
-        "menu": "Lunch na miejscu",
+        "location": "Poznan",
+        "menu": "sałatka;zupa",
         "decision_deadline": "2024-09-25T17:00:00"
     }
 ]

@@ -1,0 +1,6 @@
+fastapi[standard]==0.115.2
+passlib==1.7.4
+PyJWT==2.9.0
+Requests==2.32.3
+SQLAlchemy==2.0.36
+bcrypt==4.2.0

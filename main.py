@@ -139,13 +139,13 @@ def update_answear(
     db: Session = Depends(get_db),
 ):
     db_guest = crud.get_guest(db, guest_uuid)
-    
+
     if not db_guest:
         raise HTTPException(status_code=404, detail="Guest not found")
 
     menu = db_guest.event.menu.split(";")
-    if  guest_answer.menu not in menu:
-        raise HTTPException(status_code=404, detail="Menu not found")
+    if guest_answer.menu not in menu:
+        raise HTTPException(status_code=400, detail="Menu not found")
 
     return crud.update_guest_answear(db, guest_uuid, guest_answer)
 

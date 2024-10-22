@@ -62,6 +62,7 @@ class GuestBase(BaseModel):
 class GuestAnswear(BaseModel):
     answer: bool
     menu: str
+    comments: str
 
 
 class GuestCreate(GuestBase):

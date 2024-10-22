@@ -105,6 +105,7 @@ def update_guest_answear(
     db_guest = db.query(models.Guest).filter(models.Guest.uuid == guest_uuid).first()
     db_guest.answer = guest_answer.answer
     db_guest.menu = guest_answer.menu
+    db_guest.comments = guest_answer.comments
 
     db.commit()
     db.refresh(db_guest)

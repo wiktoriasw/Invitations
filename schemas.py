@@ -18,6 +18,15 @@ class EventCreate(EventBase):
     pass
 
 
+class EventModify(BaseModel):
+    name: str | None = None
+    description: str | None = None
+    start_time: datetime | None = None
+    location: str | None = None
+    menu: str | None = None
+    decision_deadline: datetime | None = None
+
+
 class Event(EventBase):
     event_id: int
     organizer_id: int

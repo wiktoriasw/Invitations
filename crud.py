@@ -53,6 +53,39 @@ def delete_event(db: Session, event_uuid: str):
     return db_event
 
 
+def modify_event(
+    db: Session,
+    event_uuid: str,
+    event_modify: schemas.EventModify,
+):
+
+    db_event = db.query(models.Event).filter(models.Event.uuid == event_uuid).first()
+
+    update_data = {
+        k: v
+        for k, v in event_modify.model_dump(exclude_unset=True).items()
+        if v is not None
+    }
+    if update_data:
+        db_event.update(update_data)
+        db.commit()
+    # db_event.name = event_modify.name
+    # db_event.description = event_modify.description
+    # db_event.start_time = event_modify.start_time
+    # db_event.location = event_modify.location
+    # db_event.menu = event_modify.menu
+    # db_event.decision_deadline = event_modify.decision_deadline
+    return db_event
+
+
+def delete_guest_from_event(db: Session, guest_uuid: str):
+    event_guest = get_guest(db, guest_uuid)
+    db.delete(event_guest)
+    db.commit()
+
+    return event_guest
+
+
 def delete_participants_from_event(
     db: Session, event_uuid: str, skip: int = 0, limit: int = 100
 ):

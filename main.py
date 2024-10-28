@@ -62,6 +62,36 @@ def create_event(
     return crud.create_event(db=db, event=event, user_id=current_user.user_id)
 
 
+@app.put("/events", response_model=schemas.Event)
+def modify_event(
+    event_modify: schemas.EventModify,
+    event_uuid: str,
+    current_user: Annotated[schemas.User, Depends(utils.get_current_user)],
+    db: Session = Depends(get_db),
+):
+
+    db_event = crud.get_event(db, event_uuid)
+    if not db_event or db_event.organizer_id != current_user.user_id:
+        raise HTTPException(status_code=404, detail="Event not found")
+
+    return crud.modify_event(db=db, event_uuid=event_uuid, event_modify=event_modify)
+
+
+@app.delete("/events/{guest_uuid}", response_model=schemas.Guest)
+def delete_guest(
+    guest_uuid: str,
+    current_user: Annotated[schemas.User, Depends(utils.get_current_user)],
+    db: Session = Depends(get_db),
+):
+
+    db_guest = crud.get_guest(db=db, guest_uuid=guest_uuid)
+
+    if not db_guest or db_guest.event.organizer_id != current_user.user_id:
+        raise HTTPException(status_code=404, detail="Event not found")
+
+    return crud.delete_guest_from_event(db, guest_uuid)
+
+
 @app.delete("/events/{event_uuid}", response_model=schemas.Event)
 def delete_event(
     event_uuid: str,

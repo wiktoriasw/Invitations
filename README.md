@@ -21,3 +21,10 @@
     ```bash
     fastapi dev main.py
     ```
+
+## Tests
+
+1. Run tests:
+    ```bash
+    pytest
+    ```

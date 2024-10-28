@@ -4,3 +4,4 @@ PyJWT==2.9.0
 Requests==2.32.3
 SQLAlchemy==2.0.36
 bcrypt==4.2.0
+pytest==8.3.3

@@ -77,7 +77,7 @@ def modify_event(
     return crud.modify_event(db=db, event_uuid=event_uuid, event_modify=event_modify)
 
 
-@app.delete("/events/{guest_uuid}", response_model=schemas.Guest)
+@app.delete("/guests/{guest_uuid}", response_model=schemas.Guest)
 def delete_guest(
     guest_uuid: str,
     current_user: Annotated[schemas.User, Depends(utils.get_current_user)],

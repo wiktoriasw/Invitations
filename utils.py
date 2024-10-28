@@ -12,7 +12,9 @@ from sqlalchemy.orm import Session
 from . import crud
 from .database import SessionLocal
 
-SECRET_KEY = "95f6593010406a7073ffe4d829d2f054a2a55312c22de5c579d2fc4e7ce6c52a"
+from .configuration import settings
+
+SECRET_KEY = settings.secret_key
 ALGORITHM = "HS256"
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")

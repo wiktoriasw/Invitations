@@ -1,5 +1,8 @@
 import pytest
 from fastapi.testclient import TestClient
+from .configuration import settings
+
+settings.sqlalchemy_database_url = "sqlite:///./sql_app_test.db"
 
 from .main import app
 

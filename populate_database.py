@@ -1,5 +1,5 @@
 import json
-
+from tqdm import tqdm
 import requests
 
 with open("seed/users.json", "r") as f:
@@ -12,14 +12,14 @@ with open("seed/guests.json", "r") as f:
     guests = json.load(f)
 
 
-for user in users:
+for i, user in tqdm([*enumerate(users)], colour="#50A050"):
+
     r = requests.post(
         "http://127.0.0.1:8000/users",
         json=user,
         headers={"Content-Type": "application/json"},
     )
 
-for i, user in enumerate(users):
     r = requests.post(
         "http://127.0.0.1:8000/token",
         data={
@@ -40,8 +40,6 @@ for i, user in enumerate(users):
     )
 
     event_uuid = r.json()["uuid"]
-    # print(type(event_uuid))
-    # print(guests[i])
     guests[i]["event_uuid"] = event_uuid
 
     r = requests.post(
@@ -52,4 +50,3 @@ for i, user in enumerate(users):
             "Authorization": f"Bearer {token}",
         },
     )
-    print(r.status_code, r.text)

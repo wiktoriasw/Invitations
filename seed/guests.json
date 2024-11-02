@@ -1,41 +1,35 @@
 [
     {
-      "event_id": 1,
       "name": "Karolina",
       "surname": "Kowalska",
       "email": "karkowal@gmail.com",
       "phone": "+48765456384"
     },
     {
-      "event_id": 2,
       "name": "Micha\u0142",
       "surname": "Nowak",
       "email": "michalnowak@gmail.com",
       "phone": "+48783467582"
     },
     {
-      "event_id": 3,
       "name": "Anna",
       "surname": "Zieli\u0144ska",
       "email": "annazielinska@gmail.com",
       "phone": "+48789456123"
     },
     {
-      "event_id": 4,
       "name": "Tomasz",
       "surname": "Lewandowski",
       "email": "tomaszlewandowski@gmail.com",
       "phone": "+48573498267"
     },
     {
-      "event_id": 5,
       "name": "Ewa",
       "surname": "Wi\u015bniewska",
       "email": "ewawisniewska@gmail.com",
       "phone": "+48789734561"
     },
     {
-      "event_id": 6,
       "name": "Krzysztof",
       "surname": "W\u00f3jcik",
       "email": "krzysztofwojcik@gmail.com",

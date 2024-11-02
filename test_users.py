@@ -19,6 +19,13 @@ event_1 = {
     "decision_deadline": "2024-11-28T12:00:00",
 }
 
+guest_1 = {
+    "name": "Karolina",
+    "surname": "Kowalska",
+    "email": "karkowal@gmail.com",
+    "phone": "+48765456384",
+}
+
 
 @pytest.fixture(scope="function", autouse=True)
 def clean_up():
@@ -113,3 +120,109 @@ def test_create_event():
 
     assert response.json()["name"] == event_1["name"]
     assert response.json()["description"] == event_1["description"]
+
+
+def test_delete_event():
+    response = client.post("/users", json=user_1)
+    assert response.status_code == 200
+
+    response = client.post(
+        "/token",
+        data={
+            "username": user_1["email"],
+            "password": user_1["password"],
+        },
+    )
+
+    assert response.status_code == 200
+    assert "access_token" in response.json()
+    token = response.json()["access_token"]
+
+    response = client.post(
+        "/events",
+        json=event_1,
+        headers={
+            "Authorization": f"Bearer {token}",
+        },
+    )
+    assert response.status_code == 200
+
+    event_uuid = response.json()["uuid"]
+    assert event_uuid is not None
+
+    response = client.delete(
+        f"events/{event_uuid}",
+        headers={
+            "Authorization": f"Bearer {token}",
+        },
+    )
+
+    assert response.status_code == 200
+
+    response = client.get(
+        f"/events/{event_uuid}",
+        headers={
+            "Authorization": f"Bearer {token}",
+        },
+    )
+
+    assert response.status_code == 404
+
+
+def test_delete_guest_from_event():
+    response = client.post("/users", json=user_1)
+    assert response.status_code == 200
+
+    response = client.post(
+        "/token",
+        data={
+            "username": user_1["email"],
+            "password": user_1["password"],
+        },
+    )
+
+    assert response.status_code == 200
+    assert "access_token" in response.json()
+    token = response.json()["access_token"]
+
+    response = client.post(
+        "/events",
+        json=event_1,
+        headers={
+            "Authorization": f"Bearer {token}",
+        },
+    )
+    assert response.status_code == 200
+
+    event_uuid = response.json()["uuid"]
+    guest_1["event_uuid"] = event_uuid
+
+    response = client.post(
+        "/guests",
+        json=guest_1,
+        headers={
+            "Authorization": f"Bearer {token}",
+        },
+    )
+
+    assert response.status_code == 200
+
+    guest_uuid = response.json()["uuid"]
+
+    response = client.delete(
+        f"/guests/{guest_uuid}",
+        headers={
+            "Authorization": f"Bearer {token}",
+        },
+    )
+
+    assert response.status_code == 200
+
+    response = client.get(
+        f"/guests/{guest_uuid}",
+        headers={
+            "Authorization": f"Bearer {token}",
+        },
+    )
+
+    assert response.status_code == 404

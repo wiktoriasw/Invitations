@@ -28,3 +28,17 @@
     ```bash
     pytest
     ```
+
+## Configuration
+
+Use environment variables or `.env` file
+
+- `SECRET_KEY` - JWT Secret key - No default - You need to assign it
+    - Generate key:
+        ```bash
+        openssl rand -hex 32
+        ```
+
+- `ALGORITHM` - JWT hashing algorithm - Default: `HS256`
+
+- `SQLALCHEMY_DATABASE_URL` - Database connection string [SQLAlchemy compatible](https://docs.sqlalchemy.org/en/20/core/engines.html) - Default: `"sqlite:///./sql_app.db"`

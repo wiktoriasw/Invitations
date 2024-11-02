@@ -15,7 +15,7 @@ from .database import SessionLocal
 from .configuration import settings
 
 SECRET_KEY = settings.secret_key
-ALGORITHM = "HS256"
+ALGORITHM = settings.algorithm
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")

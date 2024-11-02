@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 ## NIEDZ 15.09
 
@@ -32,8 +32,7 @@ class Event(EventBase):
     organizer_id: int
     uuid: str
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class Token(BaseModel):
@@ -57,8 +56,7 @@ class User(UserBase):
     user_id: int
     events: list[Event] = []
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class GuestBase(BaseModel):
@@ -83,5 +81,4 @@ class Guest(GuestBase):
     answer: bool | None
     menu: str | None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)

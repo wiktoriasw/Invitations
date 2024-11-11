@@ -2,11 +2,11 @@ import pytest
 from fastapi.testclient import TestClient
 
 from . import test_utils
-from .configuration import settings
+from ..configuration import settings
 
 settings.sqlalchemy_database_url = "sqlite:///./sql_app_test.db"
 
-from .main import app
+from ..main import app
 
 client = TestClient(app)
 
@@ -35,25 +35,25 @@ def clean_up():
 
 
 def test_add_user():
-    assert test_utils.create_user(client=client, user_1=user_1)
+    assert test_utils.create_user(client=client, user=user_1)
     response = client.get("/users")
     assert response.status_code == 200
     assert any(user["email"] == user_1["email"] for user in response.json()) is True
 
 
 def test_add_user_multiple_times():
-    response = test_utils.create_user(client=client, user_1=user_1)
+    response = test_utils.create_user(client=client, user=user_1)
     response = client.post("/users", json=user_1)
     assert response.status_code == 400
 
 
 def test_sign_in():
-    assert test_utils.create_user(client=client, user_1=user_1)
-    assert test_utils.login_user(client=client, user_1=user_1)
+    assert test_utils.create_user(client=client, user=user_1)
+    assert test_utils.login_user(client=client, user=user_1)
 
 
 def test_sign_in_with_wrong_password():
-    assert test_utils.create_user(client=client, user_1=user_1)
+    assert test_utils.create_user(client=client, user=user_1)
 
     response = client.post(
         "/token",
@@ -68,7 +68,7 @@ def test_sign_in_with_wrong_password():
 
 
 def test_user_email():
-    response = test_utils.create_user(client=client, user_1=user_1)
+    response = test_utils.create_user(client=client, user=user_1)
 
     user_id = response.json()["user_id"]
     response = client.get(f"/users/{user_id}")

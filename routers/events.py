@@ -19,7 +19,7 @@ def create_event(
     return crud.create_event(db=db, event=event, user_id=current_user.user_id)
 
 
-@router.put("", response_model=schemas.Event)
+@router.put("/{event_uuid}", response_model=schemas.Event)
 def modify_event(
     event_modify: schemas.EventModify,
     event_uuid: str,

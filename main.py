@@ -8,8 +8,8 @@ from sqlalchemy.orm import Session
 
 from . import crud, models, schemas, utils
 from .database import engine
-from .utils import get_db
 from .routers import events, guests, users
+from .utils import get_db, verify_password
 
 
 @event.listens_for(Engine, "connect")
@@ -29,12 +29,29 @@ app.include_router(guests.router)
 
 
 
+@app.post("/change_password", response_model=schemas.UserBase)
+def change_password(
+    user_change_password: schemas.UserChangePassword,
     current_user: Annotated[schemas.User, Depends(utils.get_current_user)],
     db: Session = Depends(get_db),
 ):
+    db_user = crud.get_user_by_email(db, current_user.email)
 
+    if not db_user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
+        )
 
+    if not verify_password(user_change_password.old_password, db_user.hashed_password):
+        raise HTTPException(
+            status_code=status.HTTP_406_NOT_ACCEPTABLE, detail="Wrong password"
+        )
 
+    return crud.change_password(
+        db=db,
+        new_password=user_change_password.new_password,
+        user_id=current_user.user_id,
+    )
 
 
 @app.post("/token")

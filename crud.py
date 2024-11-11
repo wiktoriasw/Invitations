@@ -3,6 +3,7 @@ from sqlalchemy import text, update
 from sqlalchemy.orm import Session
 
 from . import models, schemas, utils
+from .configuration import settings
 from .database import engine
 
 
@@ -24,6 +25,16 @@ def create_user(db: Session, user: schemas.UserCreate):
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
+    return db_user
+
+
+def change_password(db: Session, new_password: str, user_id: int):
+    db_user = db.query(models.User).filter(models.User.user_id == user_id).first()
+    new_password_hashed = utils.get_password_hash(new_password)
+    db_user.hashed_password = new_password_hashed
+    db.commit()
+    db.refresh(db_user)
+
     return db_user
 
 

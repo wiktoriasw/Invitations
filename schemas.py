@@ -59,6 +59,11 @@ class User(UserBase):
     model_config = ConfigDict(from_attributes=True)
 
 
+class UserChangePassword(BaseModel):
+    old_password: str
+    new_password: str
+
+
 class GuestBase(BaseModel):
     name: str
     surname: str

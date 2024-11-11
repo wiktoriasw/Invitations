@@ -1,5 +1,7 @@
 import pytest
 from fastapi.testclient import TestClient
+
+from . import test_utils
 from .configuration import settings
 
 settings.sqlalchemy_database_url = "sqlite:///./sql_app_test.db"
@@ -33,41 +35,25 @@ def clean_up():
 
 
 def test_add_user():
-    response = client.post("/users", json=user_1)
-    assert response.status_code == 200
-
+    assert test_utils.create_user(client=client, user_1=user_1)
     response = client.get("/users")
     assert response.status_code == 200
     assert any(user["email"] == user_1["email"] for user in response.json()) is True
 
 
 def test_add_user_multiple_times():
-    response = client.post("/users", json=user_1)
-    assert response.status_code == 200
-
+    response = test_utils.create_user(client=client, user_1=user_1)
     response = client.post("/users", json=user_1)
     assert response.status_code == 400
 
 
 def test_sign_in():
-    response = client.post("/users", json=user_1)
-    assert response.status_code == 200
-
-    response = client.post(
-        "/token",
-        data={
-            "username": user_1["email"],
-            "password": user_1["password"],
-        },
-    )
-
-    assert response.status_code == 200
-    assert "access_token" in response.json()
+    assert test_utils.create_user(client=client, user_1=user_1)
+    assert test_utils.login_user(client=client, user_1=user_1)
 
 
 def test_sign_in_with_wrong_password():
-    response = client.post("/users", json=user_1)
-    assert response.status_code == 200
+    assert test_utils.create_user(client=client, user_1=user_1)
 
     response = client.post(
         "/token",
@@ -82,8 +68,7 @@ def test_sign_in_with_wrong_password():
 
 
 def test_user_email():
-    response = client.post("/users", json=user_1)
-    assert response.status_code == 200
+    response = test_utils.create_user(client=client, user_1=user_1)
 
     user_id = response.json()["user_id"]
     response = client.get(f"/users/{user_id}")
@@ -91,138 +76,3 @@ def test_user_email():
 
     assert "email" in response.json()
     assert response.json()["email"] == user_1["email"]
-
-
-def test_create_event():
-    response = client.post("/users", json=user_1)
-    assert response.status_code == 200
-
-    response = client.post(
-        "/token",
-        data={
-            "username": user_1["email"],
-            "password": user_1["password"],
-        },
-    )
-
-    assert response.status_code == 200
-    assert "access_token" in response.json()
-    token = response.json()["access_token"]
-
-    response = client.post(
-        "/events",
-        json=event_1,
-        headers={
-            "Authorization": f"Bearer {token}",
-        },
-    )
-    assert response.status_code == 200
-
-    assert response.json()["name"] == event_1["name"]
-    assert response.json()["description"] == event_1["description"]
-
-
-def test_delete_event():
-    response = client.post("/users", json=user_1)
-    assert response.status_code == 200
-
-    response = client.post(
-        "/token",
-        data={
-            "username": user_1["email"],
-            "password": user_1["password"],
-        },
-    )
-
-    assert response.status_code == 200
-    assert "access_token" in response.json()
-    token = response.json()["access_token"]
-
-    response = client.post(
-        "/events",
-        json=event_1,
-        headers={
-            "Authorization": f"Bearer {token}",
-        },
-    )
-    assert response.status_code == 200
-
-    event_uuid = response.json()["uuid"]
-    assert event_uuid is not None
-
-    response = client.delete(
-        f"events/{event_uuid}",
-        headers={
-            "Authorization": f"Bearer {token}",
-        },
-    )
-
-    assert response.status_code == 200
-
-    response = client.get(
-        f"/events/{event_uuid}",
-        headers={
-            "Authorization": f"Bearer {token}",
-        },
-    )
-
-    assert response.status_code == 404
-
-
-def test_delete_guest_from_event():
-    response = client.post("/users", json=user_1)
-    assert response.status_code == 200
-
-    response = client.post(
-        "/token",
-        data={
-            "username": user_1["email"],
-            "password": user_1["password"],
-        },
-    )
-
-    assert response.status_code == 200
-    assert "access_token" in response.json()
-    token = response.json()["access_token"]
-
-    response = client.post(
-        "/events",
-        json=event_1,
-        headers={
-            "Authorization": f"Bearer {token}",
-        },
-    )
-    assert response.status_code == 200
-
-    event_uuid = response.json()["uuid"]
-    guest_1["event_uuid"] = event_uuid
-
-    response = client.post(
-        "/guests",
-        json=guest_1,
-        headers={
-            "Authorization": f"Bearer {token}",
-        },
-    )
-
-    assert response.status_code == 200
-
-    guest_uuid = response.json()["uuid"]
-
-    response = client.delete(
-        f"/guests/{guest_uuid}",
-        headers={
-            "Authorization": f"Bearer {token}",
-        },
-    )
-
-    assert response.status_code == 200
-
-    response = client.get(
-        f"/guests/{guest_uuid}",
-        headers={
-            "Authorization": f"Bearer {token}",
-        },
-    )
-
-    assert response.status_code == 404

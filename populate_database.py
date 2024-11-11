@@ -1,6 +1,7 @@
 import json
-from tqdm import tqdm
+
 import requests
+from tqdm import tqdm
 
 with open("seed/users.json", "r") as f:
     users = json.load(f)

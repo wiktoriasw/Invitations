@@ -10,9 +10,8 @@ from passlib.context import CryptContext
 from sqlalchemy.orm import Session
 
 from . import crud
-from .database import SessionLocal
-
 from .configuration import settings
+from .database import SessionLocal
 
 SECRET_KEY = settings.secret_key
 ALGORITHM = settings.algorithm

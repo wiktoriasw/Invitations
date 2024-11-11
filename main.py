@@ -1,6 +1,7 @@
 from typing import Annotated
 
 from fastapi import Depends, FastAPI, HTTPException, status
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy import event
 from sqlalchemy.engine import Engine
@@ -26,7 +27,17 @@ app.include_router(users.router)
 app.include_router(events.router)
 app.include_router(guests.router)
 
+origins = [
+    "*",
+]
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.post("/change_password", response_model=schemas.UserBase)

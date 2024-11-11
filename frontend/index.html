@@ -1,0 +1,28 @@
+<head>
+    <title>Invitations</title>
+</head>
+<body>
+    <button  onclick="download_users()">
+        Pobierz użytkowników
+    </button>
+    <p>
+        Ilość użytkowników:<span id="user_count"></span>
+    </p>
+</body>
+
+<script>
+console.log("kotek");
+
+const foo = 1;
+foo = 2;
+
+
+async function download_users() {
+    const response = await fetch("http://127.0.0.1:8000/users");
+    const users = await response.json();
+    document.getElementById("user_count").innerText = users.length;
+
+    console.log("pies", users);
+}
+
+</script>

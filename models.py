@@ -52,3 +52,13 @@ class Guest(Base):
 
     event = relationship("Event", back_populates="guests")
     # companion = relationship("Guest")
+
+
+class ForgotPassowordToken(Base):
+    __tablename__ = "forgot_password_token"
+
+    user_id = Column(Integer, ForeignKey("users.user_id"))
+    token = Column(String, primary_key=True, unique=True, default=utils.get_uuid4)
+    expire_time = Column(DateTime, default=utils.get_default_expire_date)
+
+    user = relationship("User")

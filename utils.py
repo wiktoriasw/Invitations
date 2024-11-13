@@ -89,3 +89,7 @@ def get_current_user(
 
 def get_uuid4():
     return str(uuid.uuid4())
+
+
+def get_default_expire_date():
+    return datetime.now(timezone.utc) + timedelta(minutes=60)

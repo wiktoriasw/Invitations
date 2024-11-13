@@ -38,6 +38,29 @@ def change_password(db: Session, new_password: str, user_id: int):
     return db_user
 
 
+def create_reset_password_token(db: Session, email: str):
+    db_user = get_user_by_email(db, email)
+    token = models.ForgotPassowordToken(user_id=db_user.user_id)
+    db.add(token)
+    db.commit()
+    db.refresh(token)
+
+    return token
+
+
+def get_reset_password_token(db: Session, token: str):
+    return (
+        db.query(models.ForgotPassowordToken)
+        .filter(models.ForgotPassowordToken.token == token)
+        .first()
+    )
+
+
+def use_reset_password_token(db: Session, db_token):
+    db.delete(db_token)
+    db.commit()
+
+
 def get_event(db: Session, event_uuid: str):
     return db.query(models.Event).filter(models.Event.uuid == event_uuid).first()
 

@@ -1,3 +1,4 @@
+from datetime import datetime, timezone
 from typing import Annotated
 
 from fastapi import Depends, FastAPI, HTTPException, status
@@ -86,6 +87,46 @@ async def login_for_access_token(
         },
     )
     return schemas.Token(access_token=access_token, token_type="bearer")
+
+
+@app.post("/forget_password")
+def forget_password(
+    forgot_password_request: schemas.ForgetPasswordRequest,
+    db: Session = Depends(get_db),
+):
+    db_user = crud.get_user_by_email(db, forgot_password_request.email)
+
+    if db_user:
+        db_token = crud.create_reset_password_token(db, forgot_password_request.email)
+        print(db_token.token)
+
+    return {"status": "ok"}
+
+
+@app.post("/reset_password_with_token", response_model=schemas.UserBase)
+def reset_password_with_token(
+    reset_password_token: schemas.ResetPasswordToken, db: Session = Depends(get_db)
+):
+
+    db_token = crud.get_reset_password_token(db, reset_password_token.token)
+
+    if not db_token:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Token not exist"
+        )
+
+    db_token.expire_time = db_token.expire_time.replace(tzinfo=timezone.utc)
+    if datetime.now(timezone.utc) > db_token.expire_time:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Token expired"
+        )
+
+    db_user = crud.change_password(
+        db, reset_password_token.new_password, db_token.user_id
+    )
+    crud.use_reset_password_token(db, db_token)
+
+    return db_user
 
 
 @app.post("/reset_tables")

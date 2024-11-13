@@ -87,3 +87,12 @@ class Guest(GuestBase):
     menu: str | None
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class ForgetPasswordRequest(BaseModel):
+    email: str
+
+
+class ResetPasswordToken(BaseModel):
+    token: str
+    new_password: str

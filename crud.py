@@ -1,3 +1,5 @@
+from typing import Dict
+
 from fastapi import HTTPException
 from sqlalchemy import text, update
 from sqlalchemy.orm import Session
@@ -76,6 +78,37 @@ def create_event(db: Session, event: schemas.EventCreate, user_id: int):
     db.commit()
     db.refresh(db_event)
     return db_event
+
+
+def get_event_stats(db: Session, event_uuid: str):
+    event_guests = get_guests_from_event(db, event_uuid)
+
+    menu_answers: Dict[str, int] = {}
+
+    answer_yes = 0
+    answer_no = 0
+    without_answer = 0
+
+    for guest in event_guests:
+        if guest.answer is True:
+            answer_yes += 1
+        elif guest.answer is False:
+            answer_no += 1
+        else:
+            without_answer += 1
+
+    for guest in event_guests:
+        if guest.menu not in menu_answers:
+            menu_answers[guest.menu] = 0
+
+        menu_answers[guest.menu] += 1
+
+    return {
+        "sum_true": answer_yes,
+        "sum_false": answer_no,
+        "sum_unkown": without_answer,
+        "menu_answers": menu_answers,
+    }
 
 
 def delete_event(db: Session, event_uuid: str):

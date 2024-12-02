@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from .. import crud, schemas, utils
@@ -39,15 +39,13 @@ def delete_event(
     event_uuid: str,
     current_user: Annotated[schemas.User, Depends(utils.get_current_user)],
     db: Session = Depends(get_db),
-    skip: int = 0,
-    limit: int = 100,
 ):
 
     db_event = crud.get_event(db, event_uuid)
     if not db_event or db_event.organizer_id != current_user.user_id:
         raise HTTPException(status_code=404, detail="Event not found")
 
-    crud.delete_participants_from_event(db, event_uuid, skip=skip, limit=limit)
+    crud.delete_participants_from_event(db, event_uuid)
 
     return crud.delete_event(db, event_uuid)
 
@@ -71,3 +69,25 @@ def read_guests_from_event(
     event_uuid: str, skip: int = 0, limit: int = 100, db: Session = Depends(get_db)
 ):
     return crud.get_guests_from_event(db, event_uuid, skip=skip, limit=limit)
+
+
+@router.get("/{event_uuid}/stats")
+def read_event_stats(
+    event_uuid: str,
+    current_user: Annotated[schemas.User, Depends(utils.get_current_user)],
+    db: Session = Depends(get_db),
+):
+
+    db_event = crud.get_event(db, event_uuid)
+    if not db_event:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Event not found"
+        )
+
+    if db_event.organizer_id != current_user.user_id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="You are not an owner of this event",
+        )
+
+    return crud.get_event_stats(db, event_uuid)

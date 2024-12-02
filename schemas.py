@@ -2,8 +2,6 @@ from datetime import datetime
 
 from pydantic import BaseModel, ConfigDict
 
-## NIEDZ 15.09
-
 
 class EventBase(BaseModel):
     name: str
@@ -77,8 +75,14 @@ class GuestAnswear(BaseModel):
     comments: str
 
 
+class CompanionAnswear(GuestAnswear):
+    name: str
+    surname: str
+
+
 class GuestCreate(GuestBase):
     event_uuid: str
+    has_companion: bool = False
 
 
 class Guest(GuestBase):

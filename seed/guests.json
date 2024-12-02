@@ -3,7 +3,8 @@
       "name": "Karolina",
       "surname": "Kowalska",
       "email": "karkowal@gmail.com",
-      "phone": "+48765456384"
+      "phone": "+48765456384",
+      "has_companion": true
     },
     {
       "name": "Micha\u0142",

@@ -1,8 +1,8 @@
 import pytest
 from fastapi.testclient import TestClient
 
-from . import test_utils
 from ..configuration import settings
+from . import test_utils
 
 settings.sqlalchemy_database_url = "sqlite:///./sql_app_test.db"
 
@@ -78,9 +78,7 @@ def test_delete_guest_from_event():
 def test_wrong_user_delete_guests():
     test_utils.create_user(client=client, user=user_1)
     user1_token = test_utils.login_user(client=client, user=user_1)
-    response = test_utils.create_event(
-        client=client, event=event_1, token=user1_token
-    )
+    response = test_utils.create_event(client=client, event=event_1, token=user1_token)
     event_uuid = response.json()["uuid"]
     assert event_uuid is not None
     guest_1["event_uuid"] = event_uuid
@@ -108,9 +106,7 @@ def test_wrong_user_delete_guests():
 
     assert response.status_code == 404
 
-    response = client.get(
-        f"/guests/{guest_uuid}"
-    )
+    response = client.get(f"/guests/{guest_uuid}")
 
     assert response.status_code == 200
 
@@ -119,9 +115,7 @@ def test_wrong_user_add_guests():
     test_utils.create_user(client=client, user=user_1)
     user1_token = test_utils.login_user(client=client, user=user_1)
 
-    response = test_utils.create_event(
-        client=client, event=event_1, token=user1_token
-    )
+    response = test_utils.create_event(client=client, event=event_1, token=user1_token)
     event_uuid = response.json()["uuid"]
     assert event_uuid is not None
     guest_1["event_uuid"] = event_uuid
@@ -139,9 +133,6 @@ def test_wrong_user_add_guests():
 
     assert response.status_code == 401
 
-    response = client.get(
-        f"/events/{event_uuid}/guests"
-    )
+    response = client.get(f"/events/{event_uuid}/guests")
 
     assert len(response.json()) == 0
-    

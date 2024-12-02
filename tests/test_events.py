@@ -1,8 +1,9 @@
 import pytest
 from fastapi.testclient import TestClient
 
-from . import test_utils
 from ..configuration import settings
+from . import test_utils
+
 settings.sqlalchemy_database_url = "sqlite:///./sql_app_test.db"
 
 from ..main import app
@@ -32,6 +33,7 @@ event_modify = {
     "name": "Kolacja z klientem",
     "description": "Umowa i warunki",
 }
+
 
 @pytest.fixture(scope="function", autouse=True)
 def clean_up():
@@ -74,9 +76,7 @@ def test_delete_event():
 def test_different_user_delete_event():
     assert test_utils.create_user(client=client, user=user_1)
     user1_token = test_utils.login_user(client=client, user=user_1)
-    response = test_utils.create_event(
-        client=client, event=event_1, token=user1_token
-    )
+    response = test_utils.create_event(client=client, event=event_1, token=user1_token)
 
     event_uuid = response.json()["uuid"]
     assert event_uuid is not None
@@ -99,15 +99,15 @@ def test_different_user_delete_event():
 
     assert response.status_code == 200
 
-#4. Napisać test: niezalogowany użytkownik próbuje zmodyfikować event
+
+# 4. Napisać test: niezalogowany użytkownik próbuje zmodyfikować event
+
 
 def test_different_user_modify_event():
     test_utils.create_user(client=client, user=user_1)
     user1_token = test_utils.login_user(client=client, user=user_1)
 
-    response = test_utils.create_event(
-        client=client, event=event_1, token=user1_token
-    )
+    response = test_utils.create_event(client=client, event=event_1, token=user1_token)
     event_uuid = response.json()["uuid"]
     assert event_uuid is not None
 
@@ -123,10 +123,7 @@ def test_different_user_modify_event():
     )
     assert response.status_code == 404
 
-    response = client.get(
-        f"/events/{event_uuid}"
-    )
+    response = client.get(f"/events/{event_uuid}")
 
     assert response.json()["name"] == event_1["name"]
     assert response.json()["description"] == event_1["description"]
-

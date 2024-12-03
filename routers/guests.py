@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -79,6 +80,11 @@ def update_answear(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Companion cannot change their answers",
         )
+    if db_guest.event.decision_deadline < datetime.now():
+        raise HTTPException(
+            status.HTTP_406_NOT_ACCEPTABLE,
+            detail="After the deadline you cannot update your answer",
+        )
 
     menu = db_guest.event.menu.split(";")
     if guest_answer.menu not in menu:
@@ -103,19 +109,27 @@ def update_comapnion_data(
     if not db_companion:
         raise HTTPException(status_code=404, detail="Companion guest not found")
 
-    menu = db_companion.event.menu.split(";")
-    if companion_answer.menu not in menu:
-        raise HTTPException(status_code=400, detail="Menu not found")
-
     db_guest = crud.get_primary_guest(db, db_companion.guest_id)
     if db_guest.answer is None:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Primary guest has to answer first",
         )
+
     if db_guest.answer is False:
         raise HTTPException(
             status.HTTP_403_FORBIDDEN,
             detail="You cannot participate without primary guest",
         )
+
+    if db_guest.event.decision_deadline < datetime.now():
+        raise HTTPException(
+            status.HTTP_406_NOT_ACCEPTABLE,
+            detail="After the deadline you cannot update companion answer",
+        )
+
+    menu = db_companion.event.menu.split(";")
+    if companion_answer.menu not in menu:
+        raise HTTPException(status_code=400, detail="Menu not found")
+
     return crud.update_companion_answer(db, companion_uuid, companion_answer)

@@ -66,9 +66,23 @@ def read_event(event_uuid: str, db: Session = Depends(get_db)):
 
 @router.get("/{event_uuid}/guests", response_model=list[schemas.Guest])
 def read_guests_from_event(
-    event_uuid: str, skip: int = 0, limit: int = 100, db: Session = Depends(get_db)
+    event_uuid: str,
+    current_user: Annotated[schemas.User, Depends(utils.get_current_user)],
+    db: Session = Depends(get_db),
 ):
-    return crud.get_guests_from_event(db, event_uuid, skip=skip, limit=limit)
+    db_event = crud.get_event(db, event_uuid)
+    if not db_event:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Event not found"
+        )
+
+    if db_event.organizer_id != current_user.user_id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="You are not an owner of this event",
+        )
+
+    return crud.get_guests_from_event(db, event_uuid)
 
 
 @router.get("/{event_uuid}/stats")

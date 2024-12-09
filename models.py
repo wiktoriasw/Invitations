@@ -13,6 +13,7 @@ class User(Base):
     user_id = Column(Integer, primary_key=True)
     email = Column(String(50), unique=True)
     hashed_password = Column(String)
+    role = Column(String, default="user")
 
     events = relationship("Event", back_populates="organizer")
 

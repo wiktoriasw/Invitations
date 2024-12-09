@@ -9,8 +9,8 @@ from jwt.exceptions import InvalidTokenError
 from passlib.context import CryptContext
 from sqlalchemy.orm import Session
 
-from . import crud
 from .configuration import settings
+from .crud import users
 from .database import SessionLocal
 
 SECRET_KEY = settings.secret_key
@@ -34,7 +34,7 @@ def verify_password(plain_password, hashed_password):
 
 
 def authenticate_user(form_data: OAuth2PasswordRequestForm, db: Session):
-    user = crud.get_user_by_email(db, form_data.username)
+    user = users.get_user_by_email(db, form_data.username)
 
     if not user:
         return False
@@ -80,7 +80,7 @@ def get_current_user(
     except InvalidTokenError:
         raise credentials_exception
 
-    user = crud.get_user_by_email(db, email)
+    user = users.get_user_by_email(db, email)
     if user is None:
         raise credentials_exception
 

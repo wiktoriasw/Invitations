@@ -133,6 +133,11 @@ def test_wrong_user_add_guests():
 
     assert response.status_code == 401
 
-    response = client.get(f"/events/{event_uuid}/guests")
+    response = client.get(
+        f"/events/{event_uuid}/guests",
+        headers={
+            "Authorization": f"Bearer {user1_token}",
+        },
+    )
 
     assert len(response.json()) == 0

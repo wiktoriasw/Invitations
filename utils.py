@@ -9,6 +9,7 @@ from jwt.exceptions import InvalidTokenError
 from passlib.context import CryptContext
 from sqlalchemy.orm import Session
 
+from . import schemas
 from .configuration import settings
 from .crud import users
 from .database import SessionLocal
@@ -85,6 +86,15 @@ def get_current_user(
         raise credentials_exception
 
     return user
+
+
+def get_admin_user(current_user: Annotated[schemas.User, Depends(get_current_user)]):
+    if current_user.role != "admin":
+        raise HTTPException(
+            status.HTTP_401_UNAUTHORIZED, detail="You don't have permissions"
+        )
+
+    return current_user
 
 
 def get_uuid4():

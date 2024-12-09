@@ -19,8 +19,12 @@ def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
 
 
 @router.get("", response_model=list[schemas.User])
-def read_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    db_users = users.get_users(db, skip=skip, limit=limit)
+def read_users(
+    _: Annotated[schemas.User, Depends(utils.get_admin_user)],
+    db: Session = Depends(get_db),
+):
+
+    db_users = users.get_users(db)
     return db_users
 
 

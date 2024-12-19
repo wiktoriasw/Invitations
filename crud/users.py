@@ -29,6 +29,14 @@ def create_user(db: Session, user: schemas.UserCreate):
     return db_user
 
 
+def delete_user(db: Session, user_id: int):
+    db_user = get_user(db, user_id)
+    db.delete(db_user)
+    db.commit()
+
+    return db_user
+
+
 def change_role_by_user_uuid(db: Session, user_change_role: schemas.UserChangeRole, uuid: str):
     db_user = get_user_by_uuid(db, uuid)
     db_user.role = user_change_role.role

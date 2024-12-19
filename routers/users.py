@@ -57,3 +57,32 @@ def change_role(
         )
 
     users.change_role_by_user_uuid(db, role, user_uuid)
+
+
+@router.delete("/{user_uuid}")
+def delete_user(
+    current_user: Annotated[schemas.User, Depends(utils.get_current_user)],
+    user_uuid: str,
+    db: Session = Depends(get_db),
+):
+    db_user = users.get_user_by_uuid(db, user_uuid)
+
+    if not db_user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    if current_user.role != "admin" and current_user.user_id != db_user.user_id:
+        raise HTTPException(status_code=401, detail="You don't have permission")
+    
+    if current_user.role == "admin" and current_user.user_id == db_user.user_id:
+        raise HTTPException(status_code=401, detail="Admin can't remove theirselves")
+
+    db_events = events.get_event_by_organizer(db, db_user.user_id)
+
+    for event in db_events:
+        events.delete_event(db, event.uuid)
+
+    users.delete_user(db, db_user.user_id)
+
+    return {
+        "detail": f"User <{user_uuid}> and their events have been deleted successfully"
+    }

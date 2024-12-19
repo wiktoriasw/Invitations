@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from .. import models, schemas, utils
@@ -41,3 +41,19 @@ def read_user(user_id: int, db: Session = Depends(get_db)):
     if db_user is None:
         raise HTTPException(status_code=404, detail="User not found")
     return db_user
+
+
+@router.post("/{user_uuid}/role")
+def change_role(
+    current_user: Annotated[schemas.User, Depends(utils.get_admin_user)],
+    user_uuid: str,
+    role: schemas.UserChangeRole,
+    db: Session = Depends(get_db),
+):
+    if current_user.uuid == user_uuid:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Admin can't change their own role",
+        )
+
+    users.change_role_by_user_uuid(db, role, user_uuid)

@@ -50,6 +50,10 @@ class UserCreate(UserBase):
     password: str
 
 
+class UserChangeRole(BaseModel):
+    role: str
+
+
 class User(UserBase):
     user_id: int
     events: list[Event] = []

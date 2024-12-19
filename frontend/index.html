@@ -1,7 +1,29 @@
 <head>
     <title>Invitations</title>
+    <style>
+        button {
+            font-size: large;
+        }
+
+        .logout {
+            background-color: red;
+            font-weight: 600;
+            padding: 8px;
+            border: 1px solid pink;
+            border-radius: 3px;
+            transition: all 0.5s;
+        }
+
+        .logout:hover {
+            background-color: aqua;
+        }
+    </style>
 </head>
 <body>
+    <button class="logout" onclick="sign_in('adam.nowak1234@mail.com', '123')">
+        Zaloguj się
+    </button>
+    <hr>
     <button  onclick="download_users()">
         Pobierz liczbę użytkowników
     </button>
@@ -9,9 +31,15 @@
         Liczba użytkowników:<span id="user_count"></span>
     </p>
     <hr>
-    <button onclick="sign_in('adam.nowak1234@mail.com', '123')">
-        Zaloguj się
+    <button onclick="download_events()">
+        Pobierz wydarzenia
     </button>
+    
+    <p>
+        Wydarzenia: <span id="events_list"></span>
+    </p>
+    
+
     <hr>
     <button onclick="download_stats()">
         Pobierz statystyki wydarzenia
@@ -28,10 +56,12 @@
 
     <input type="text" id="event_guests_uuid" placeholder ="event_uuid">
     <p>
-        Goście wydarzenia: <span id="guests_list"></span>
+        Goście wydarzenia: 
+        <span id="guests_list">
+        </span>
     </p>
     <hr>
-    <button onclick="log_out()">
+    <button  class="logout" onclick="log_out()">
         Wyloguj się
     </button>
 
@@ -49,11 +79,37 @@ GET
 */
 
 async function download_users() {
-    const response = await fetch("http://127.0.0.1:8000/users");
+    const response = await fetch("http://127.0.0.1:8000/users", 
+    {headers: {
+            Authorization: `Bearer ${token}`,
+        }
+});
     const users = await response.json();
     document.getElementById("user_count").innerText = users.length;
 
     console.log("pies", users);
+}
+
+async function download_events() {
+    const response = await fetch("http://127.0.0.1:8000/events",
+    {headers: {
+            Authorization: `Bearer ${token}`,
+        }
+});
+    const events = await response.json();
+    document.getElementById("events_list").innerText = "";
+
+    const ul = document.createElement("ul")
+
+    for (const event of events) {
+        const li = document.createElement("li")
+        li.innerText = `${event.name} ${event.uuid}`
+        ul.appendChild(li)
+    }
+
+    document.getElementById("events_list").appendChild(ul);
+
+    console.log(events);
 }
 
 async function sign_in(user, password) {
@@ -90,7 +146,19 @@ async function download_event_guests() {
         }
     });
     const guests = await response.json();
-    document.getElementById("guests_list").innerText = JSON.stringify(guests);
+
+    document.getElementById("guests_list").innerText = "";
+    const ul = document.createElement("ul")
+
+    for (const guest of guests) {
+        const li = document.createElement("li")
+        li.innerText = `${guest.name} ${guest.surname}`
+        ul.appendChild(li)
+    }
+
+    document.getElementById("guests_list").appendChild(ul)
+
+
     console.log(guests);
 
 

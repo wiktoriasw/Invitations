@@ -86,10 +86,13 @@ def update_answear(
             status.HTTP_406_NOT_ACCEPTABLE,
             detail="After the deadline you cannot update your answer",
         )
-
-    menu = db_guest.event.menu.split(";")
-    if guest_answer.menu not in menu:
-        raise HTTPException(status_code=400, detail="Menu not found")
+    
+    if guest_answer.answer is False:
+        guest_answer.menu = None
+    else:
+        menu = db_guest.event.menu.split(";")
+        if guest_answer.menu not in menu:
+            raise HTTPException(status_code=400, detail="Menu not found")
 
     if db_guest.answer is False and db_guest.companion_id is not None:
         db_companion = guests.get_guest_by_id(db, db_guest.companion_id)
@@ -105,6 +108,10 @@ def update_comapnion_data(
     companion_answer: schemas.CompanionAnswear,
     db: Session = Depends(get_db),
 ):
+    if companion_answer.answer:
+        if companion_answer.name is None or companion_answer.surname is None:
+            raise HTTPException(status.HTTP_422_UNPROCESSABLE_ENTITY, 'You need to provide name and surname')
+
     db_companion = guests.get_guest(db, companion_uuid)
 
     if not db_companion:
@@ -128,9 +135,11 @@ def update_comapnion_data(
             status.HTTP_406_NOT_ACCEPTABLE,
             detail="After the deadline you cannot update companion answer",
         )
-
-    menu = db_companion.event.menu.split(";")
-    if companion_answer.menu not in menu:
-        raise HTTPException(status_code=400, detail="Menu not found")
+    if companion_answer.answer is False:
+        companion_answer.menu = None
+    else:
+        menu = db_companion.event.menu.split(";")
+        if companion_answer.menu not in menu:
+            raise HTTPException(status_code=400, detail="Menu not found")
 
     return guests.update_companion_answer(db, companion_uuid, companion_answer)

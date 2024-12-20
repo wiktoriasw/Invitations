@@ -75,13 +75,13 @@ class GuestBase(BaseModel):
 
 class GuestAnswear(BaseModel):
     answer: bool
-    menu: str
-    comments: str
+    menu: str | None = None
+    comments: str | None = None
 
 
 class CompanionAnswear(GuestAnswear):
-    name: str
-    surname: str
+    name: str | None = None
+    surname: str | None = None
 
 
 class GuestCreate(GuestBase):

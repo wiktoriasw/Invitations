@@ -84,8 +84,11 @@ def update_companion_answer(
 ):
     db_companion_guest = get_guest(db, companion_uuid)
 
-    db_companion_guest.name = companion_answer.name
-    db_companion_guest.surname = companion_answer.surname
+    if companion_answer.name:
+        db_companion_guest.name = companion_answer.name
+        
+    if companion_answer.surname:
+        db_companion_guest.surname = companion_answer.surname
 
     db_companion_guest.answer = companion_answer.answer
     db_companion_guest.menu = companion_answer.menu

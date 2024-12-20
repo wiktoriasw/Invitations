@@ -36,7 +36,11 @@ def read_users_me(
 
 
 @router.get("/{user_id}", response_model=schemas.User)
-def read_user(user_id: int, db: Session = Depends(get_db)):
+def read_user(
+    _: Annotated[schemas.User, Depends(utils.get_admin_user)],
+    user_id: int,
+    db: Session = Depends(get_db),
+):
     db_user = users.get_user(db, user_id=user_id)
     if db_user is None:
         raise HTTPException(status_code=404, detail="User not found")

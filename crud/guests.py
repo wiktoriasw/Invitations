@@ -86,7 +86,7 @@ def update_companion_answer(
 
     if companion_answer.name:
         db_companion_guest.name = companion_answer.name
-        
+
     if companion_answer.surname:
         db_companion_guest.surname = companion_answer.surname
 

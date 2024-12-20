@@ -76,7 +76,7 @@ def delete_user(
 
     if current_user.role != "admin" and current_user.user_id != db_user.user_id:
         raise HTTPException(status_code=401, detail="You don't have permission")
-    
+
     if current_user.role == "admin" and current_user.user_id == db_user.user_id:
         raise HTTPException(status_code=401, detail="Admin can't remove theirselves")
 

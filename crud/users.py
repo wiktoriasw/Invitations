@@ -46,7 +46,9 @@ def change_user_role(db: Session, role: str, email: str):
     return db_user
 
 
-def change_role_by_user_uuid(db: Session, user_change_role: schemas.UserChangeRole, uuid: str):
+def change_role_by_user_uuid(
+    db: Session, user_change_role: schemas.UserChangeRole, uuid: str
+):
     db_user = get_user_by_uuid(db, uuid)
     db_user.role = user_change_role.role
     db.commit()

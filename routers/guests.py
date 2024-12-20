@@ -86,7 +86,7 @@ def update_answear(
             status.HTTP_406_NOT_ACCEPTABLE,
             detail="After the deadline you cannot update your answer",
         )
-    
+
     if guest_answer.answer is False:
         guest_answer.menu = None
     else:
@@ -110,7 +110,10 @@ def update_comapnion_data(
 ):
     if companion_answer.answer:
         if companion_answer.name is None or companion_answer.surname is None:
-            raise HTTPException(status.HTTP_422_UNPROCESSABLE_ENTITY, 'You need to provide name and surname')
+            raise HTTPException(
+                status.HTTP_422_UNPROCESSABLE_ENTITY,
+                "You need to provide name and surname",
+            )
 
     db_companion = guests.get_guest(db, companion_uuid)
 

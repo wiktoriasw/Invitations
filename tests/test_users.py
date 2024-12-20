@@ -2,6 +2,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from ..configuration import settings
+from ..database import SessionLocal
 from . import test_utils
 
 settings.sqlalchemy_database_url = "sqlite:///./sql_app_test.db"
@@ -11,6 +12,7 @@ from ..main import app
 client = TestClient(app)
 
 user_1 = {"email": "test_user", "password": "123"}
+user_2 = {"email": "test_user_2", "password": "123"}
 
 event_1 = {
     "name": "Spotkanie Biznesowe z Klientem",
@@ -35,8 +37,17 @@ def clean_up():
 
 
 def test_add_user():
-    assert test_utils.create_user(client=client, user=user_1)
-    response = client.get("/users")
+    response = test_utils.create_user(client=client, user=user_1)
+
+    test_utils.create_admin(SessionLocal(), client, user_2)
+    user2_token = test_utils.login_user(client=client, user=user_2)
+
+    response = client.get(
+        "/users",
+        headers={
+            "Authorization": f"Bearer {user2_token}",
+        },
+    )
     assert response.status_code == 200
     assert any(user["email"] == user_1["email"] for user in response.json()) is True
 

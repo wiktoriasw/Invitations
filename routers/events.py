@@ -52,8 +52,8 @@ def delete_event(
 
 
 @router.get("", response_model=list[schemas.Event])
-def read_events(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    db_events = events.get_events(db, skip=skip, limit=limit)
+def read_events(db: Session = Depends(get_db)):
+    db_events = events.get_events(db)
     return db_events
 
 

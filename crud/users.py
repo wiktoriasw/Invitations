@@ -37,6 +37,15 @@ def delete_user(db: Session, user_id: int):
     return db_user
 
 
+def change_user_role(db: Session, role: str, email: str):
+    db_user = get_user_by_email(db, email)
+    db_user.role = role
+    db.commit()
+    db.refresh(db_user)
+
+    return db_user
+
+
 def change_role_by_user_uuid(db: Session, user_change_role: schemas.UserChangeRole, uuid: str):
     db_user = get_user_by_uuid(db, uuid)
     db_user.role = user_change_role.role

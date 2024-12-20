@@ -14,8 +14,12 @@ def get_event_by_id(db: Session, event_id: int):
     return db.query(models.Event).filter(models.Event.event_id == event_id).first()
 
 
-def get_events(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(models.Event).offset(skip).limit(limit).all()
+def get_event_by_organizer(db: Session, user_id: int):
+    return db.query(models.Event).filter(models.Event.organizer_id == user_id).all()
+
+
+def get_events(db: Session):
+    return db.query(models.Event).all()
 
 
 def create_event(db: Session, event: schemas.EventCreate, user_id: int):

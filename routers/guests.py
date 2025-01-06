@@ -65,7 +65,7 @@ def create_event_guest(
     return guests.create_event_guest(db, guest, event.event_id, companion_id)
 
 
-@router.post("/{guest_uuid}/answer", response_model=schemas.Guest)
+@router.post("/{guest_uuid}/answer", response_model=schemas.GuestAnswearResponse)
 def update_answear(
     guest_uuid: str,
     guest_answer: schemas.GuestAnswear,
@@ -95,12 +95,19 @@ def update_answear(
         if guest_answer.menu not in menu:
             raise HTTPException(status_code=400, detail="Menu not found")
 
-    if db_guest.answer is False and db_guest.companion_id is not None:
-        db_companion = guests.get_guest_by_id(db, db_guest.companion_id)
-        companion_answer = schemas.GuestAnswear(answer=False, menu="", comments="")
-        guests.update_guest_answear(db, db_companion.uuid, companion_answer)
+    companion_uuid = None
 
-    return guests.update_guest_answear(db, guest_uuid, guest_answer)
+    if db_guest.companion_id is not None:
+        db_companion = guests.get_guest_by_id(db, db_guest.companion_id)
+        companion_uuid = db_companion.uuid
+
+        if db_guest.answer is False:
+            companion_answer = schemas.GuestAnswear(answer=False, menu="", comments="")
+            guests.update_guest_answear(db, db_companion.uuid, companion_answer)
+
+    guests.update_guest_answear(db, guest_uuid, guest_answer)
+
+    return {"companion_uuid": companion_uuid}
 
 
 @router.post("/{companion_uuid}/companion_answer", response_model=schemas.Guest)

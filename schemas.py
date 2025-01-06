@@ -79,6 +79,10 @@ class GuestAnswear(BaseModel):
     comments: str | None = None
 
 
+class GuestAnswearResponse(BaseModel):
+    companion_uuid: str | None
+
+
 class CompanionAnswear(GuestAnswear):
     name: str | None = None
     surname: str | None = None

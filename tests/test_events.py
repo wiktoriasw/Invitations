@@ -6,7 +6,7 @@ from . import test_utils
 
 settings.sqlalchemy_database_url = "sqlite:///./sql_app_test.db"
 
-from ..main import app
+from ..main import app  # noqa: E402
 
 client = TestClient(app)
 
@@ -316,7 +316,7 @@ def get_events():
     token = test_utils.login_user(client=client, user=user_1)
     test_utils.create_event(client=client, event=event_1, token=token)
 
-    response = client.get(f"/events")
+    response = client.get("/events")
     assert response.status_code == 200
 
     events = response.json()

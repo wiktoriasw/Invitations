@@ -7,7 +7,7 @@ from . import test_utils
 
 settings.sqlalchemy_database_url = "sqlite:///./sql_app_test.db"
 
-from ..main import app
+from ..main import app  # noqa: E402
 
 client = TestClient(app)
 

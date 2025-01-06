@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from .. import schemas, utils
-from ..crud import events, guests, users
+from ..crud import events, guests
 from ..utils import get_db
 
 router = APIRouter(prefix="/events")

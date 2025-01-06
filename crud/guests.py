@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 
-from .. import models, schemas, utils
+from .. import models, schemas
 
 
 def delete_guest_from_event(db: Session, guest_uuid: str):

@@ -4,8 +4,8 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
-from .. import models, schemas, utils
-from ..crud import events, guests, users
+from .. import schemas, utils
+from ..crud import events, guests
 from ..utils import get_db
 
 router = APIRouter(prefix="/guests")
@@ -81,6 +81,7 @@ def update_answear(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Companion cannot change their answers",
         )
+
     if db_guest.event.decision_deadline < datetime.now():
         raise HTTPException(
             status.HTTP_406_NOT_ACCEPTABLE,

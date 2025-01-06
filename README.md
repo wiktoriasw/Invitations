@@ -1,5 +1,9 @@
 # Invitations
 
+## Overview
+
+**Invitations** is a FastAPI-based application for managing event invitations, such as weddings and other gatherings. It provides endpoints for creating, updating, and tracking invitations to streamline event planning and guest management.
+
 ## Run
 
 1. Clone the repository:

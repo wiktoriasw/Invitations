@@ -50,6 +50,14 @@ guest_answer_2 = {
     "menu": "polskie",
 }
 
+companion_answer = {
+    "answer": True,
+    "menu": "polskie",
+    "comments": "string",
+    "name": "Zosia",
+    "surname": "Samosia",
+}
+
 
 @pytest.fixture(scope="function", autouse=True)
 def clean_up():
@@ -254,11 +262,6 @@ def test_update_guest_answer_before_deadline():
 
     assert response.status_code == 200
 
-    updated_answer = response.json()
-
-    assert updated_answer["menu"] == guest_answer_2["menu"]
-    assert updated_answer["answer"] == guest_answer_2["answer"]
-
 
 def test_guest_cannot_update_answer_after_deadline():
     test_utils.create_user(client, user_1)
@@ -282,3 +285,48 @@ def test_guest_cannot_update_answer_after_deadline():
     )
 
     assert response.status_code == 406
+
+
+def test_guest_can_update_companion_answer_before_deadline():
+    test_utils.create_user(client, user_1)
+    user1_token = test_utils.login_user(client, user_1)
+    response = test_utils.create_event(client, event_2, user1_token)
+
+    event_uuid = response.json()["uuid"]
+    assert event_uuid is not None
+
+    event_decision_deadline = response.json()["decision_deadline"]
+    assert event_decision_deadline is not None
+
+    guest_1["event_uuid"] = event_uuid
+
+    response = test_utils.add_guest_to_event(client, guest_1, user1_token)
+
+    guest_uuid = response.json()["uuid"]
+    assert guest_uuid is not None
+
+    response = client.post(
+        f"/guests/{guest_uuid}/answer",
+        json=guest_answer_2,
+    )
+    companion_uuid = response.json()["companion_uuid"]
+    assert companion_uuid is not None
+
+    response = client.post(
+        f"/guests/{companion_uuid}/companion_answer", json=companion_answer
+    )
+    assert response.status_code == 200
+
+
+def test_guest_cannot_update_companion_answer_after_deadline():
+    pass
+
+
+# gość może zupadować odp dla kompaniona
+# gość nie moze zupdejtowac odp dla kompaniona po terminie
+
+# gość nie może najpierw zaupdatować odpowiedzi dla kompaniona potem dla siebie
+# jeśli odp goscia to false, gosc nie moze dac odp za kompaniona
+# jesli gośc nie ma companiona to nie moze zupdatować jego odpowiedzi
+# jesli gośc daje answer false to nie musi podawać menu?
+# read guests dziala

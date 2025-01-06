@@ -83,10 +83,11 @@ def delete_user(
     db_events = events.get_event_by_organizer(db, db_user.user_id)
 
     for event in db_events:
+        guests.delete_participants_from_event(db, event.uuid)
         events.delete_event(db, event.uuid)
 
     users.delete_user(db, db_user.user_id)
 
     return {
-        "detail": f"User <{user_uuid}> and their events have been deleted successfully"
+        "detail": f"User <{user_uuid}> and their events and guests have been deleted successfully"
     }

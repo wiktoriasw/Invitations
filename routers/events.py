@@ -59,8 +59,15 @@ def read_public_events(db: Session = Depends(get_db)):
 
 
 @router.get("", response_model=list[schemas.Event])
-def read_events(db: Session = Depends(get_db)):
+def read_events(
+    current_user: Annotated[schemas.User, Depends(utils.get_current_user)],
+    db: Session = Depends(get_db),
+):
+
     db_events = events.get_events(db)
+    if current_user.role != "admin":
+        db_events = events.get_event_by_organizer(db, current_user.user_id)
+
     return db_events
 
 

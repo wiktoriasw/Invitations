@@ -15,6 +15,7 @@ user_2 = {"email": "test_user_2", "password": "456"}
 
 event_1 = {
     "name": "Spotkanie Biznesowe z Klientem",
+    "is_public": "No",
     "description": "Om\u00f3wienie warunk\u00f3w wsp\u00f3\u0142pracy w restauracji",
     "start_time": "2024-12-05T14:00:00",
     "location": "Warszawa",

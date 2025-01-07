@@ -22,6 +22,10 @@ def get_events(db: Session):
     return db.query(models.Event).all()
 
 
+def get_public_events(db: Session):
+    return db.query(models.Event).filter(models.Event.is_public == "1").all()
+
+
 def create_event(db: Session, event: schemas.EventCreate, user_id: int):
     db_event = models.Event(**event.model_dump())
     db_event.organizer_id = user_id

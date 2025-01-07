@@ -1,6 +1,7 @@
 [
     {
         "name": "Spotkanie Biznesowe z Klientem",
+        "is_public": "Yes",
         "description": "Om\u00f3wienie warunk\u00f3w wsp\u00f3\u0142pracy w restauracji",
         "start_time": "2024-12-05T14:00:00",
         "location": "Warszawa",
@@ -9,6 +10,7 @@
     },
     {
         "name": "Kolacja \u015awi\u0105teczna Firmowa",
+        "is_public": "No",
         "description": "Wigilijne spotkanie z zespo\u0142em",
         "start_time": "2024-12-20T18:00:00",
         "location": "Krak\u00f3w",
@@ -17,6 +19,7 @@
     },
     {
         "name": "Konferencja Technologiczna 2024",
+        "is_public": "No",
         "description": "Spotkanie bran\u017cowe dotycz\u0105ce nowoczesnych technologii",
         "start_time": "2024-11-25T09:00:00",
         "location": "Wroc\u0142aw",
@@ -25,6 +28,7 @@
     },
     {
         "name": "Wiecz\u00f3r Gier Planszowych",
+        "is_public": "No",
         "description": "Spotkanie ze znajomymi na wsp\u00f3lne granie",
         "start_time": "2024-10-15T18:30:00",
         "location": "Gda\u0144sk",
@@ -33,6 +37,7 @@
     },
     {
         "name": "Warsztaty Fotograficzne",
+        "is_public": "No",
         "description": "Nauka podstaw fotografii w plenerze",
         "start_time": "2024-09-30T10:00:00",
         "location": "Pozna\u0144",
@@ -41,6 +46,7 @@
     },
     {
         "name": "Warsztaty kulinarne",
+        "is_public": "No",
         "description": "Nauka podstaw gotowania",
         "start_time": "2024-09-30T10:00:00",
         "location": "Poznan",

@@ -5,6 +5,7 @@ from pydantic import BaseModel, ConfigDict
 
 class EventBase(BaseModel):
     name: str
+    is_public: bool
     description: str | None = None
     start_time: datetime
     location: str

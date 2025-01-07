@@ -39,7 +39,6 @@ for i, user in tqdm([*enumerate(users)], colour="#50A050"):
             "Authorization": f"Bearer {token}",
         },
     )
-
     event_uuid = r.json()["uuid"]
     guests[i]["event_uuid"] = event_uuid
 

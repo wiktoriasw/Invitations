@@ -23,6 +23,7 @@ class Event(Base):
     event_id = Column(Integer, primary_key=True)
     uuid = Column(String, default=utils.get_uuid4)
     name = Column(String)
+    is_public = Column(Boolean)
     start_time = Column(DateTime)
     location = Column(String)
     description = Column(String)

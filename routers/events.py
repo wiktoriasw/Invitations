@@ -51,6 +51,13 @@ def delete_event(
     return events.delete_event(db, event_uuid)
 
 
+@router.get("/public", response_model=list[schemas.Event])
+def read_public_events(db: Session = Depends(get_db)):
+    db_events = events.get_public_events(db)
+
+    return db_events
+
+
 @router.get("", response_model=list[schemas.Event])
 def read_events(db: Session = Depends(get_db)):
     db_events = events.get_events(db)

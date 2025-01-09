@@ -16,6 +16,7 @@ user_2 = {"email": "test_user_2", "password": "456"}
 
 event_1 = {
     "name": "Spotkanie Biznesowe z Klientem",
+    "is_public": "Yes",
     "description": "Om\u00f3wienie warunk\u00f3w wsp\u00f3\u0142pracy w restauracji",
     "start_time": "2024-12-05T14:00:00",
     "location": "Warszawa",
@@ -25,6 +26,7 @@ event_1 = {
 
 event_2 = {
     "name": "Kolacja \u015awi\u0105teczna Firmowa",
+    "is_public": "No",
     "description": "Wigilijne spotkanie z zespo\u0142em",
     "start_time": "2024-12-20T18:00:00",
     "location": "Krak\u00f3w",
@@ -50,7 +52,20 @@ guest_answer_2 = {
     "menu": "polskie",
 }
 
-companion_answer = {
+guest_answer_3 = {
+    "answer": False,
+}
+
+
+companion_answer_1 = {
+    "answer": True,
+    "menu": "Wegetariańskie",
+    "comments": "string",
+    "name": "Basia",
+    "surname": "Nowak",
+}
+
+companion_answer_2 = {
     "answer": True,
     "menu": "polskie",
     "comments": "string",
@@ -309,24 +324,64 @@ def test_guest_can_update_companion_answer_before_deadline():
         f"/guests/{guest_uuid}/answer",
         json=guest_answer_2,
     )
+    assert response.status_code == 200
+
     companion_uuid = response.json()["companion_uuid"]
     assert companion_uuid is not None
 
     response = client.post(
-        f"/guests/{companion_uuid}/companion_answer", json=companion_answer
+        f"/guests/{companion_uuid}/companion_answer", json=companion_answer_2
     )
     assert response.status_code == 200
 
 
-def test_guest_cannot_update_companion_answer_after_deadline():
-    pass
+def test_guest_must_go_to_event_to_edit_companion_answear():
+    test_utils.create_user(client, user_1)
+    user1_token = test_utils.login_user(client, user_1)
+    response = test_utils.create_event(client, event_2, user1_token)
+
+    event_uuid = response.json()["uuid"]
+    assert event_uuid is not None
+
+    guest_1["event_uuid"] = event_uuid
+
+    response = test_utils.add_guest_to_event(client, guest_1, user1_token)
+
+    guest_uuid = response.json()["uuid"]
+    assert guest_uuid is not None
+
+    response = client.post(
+        f"/guests/{guest_uuid}/answer",
+        json=guest_answer_3,
+    )
+    assert response.status_code == 200
+
+    companion_uuid = response.json()["companion_uuid"]
+    assert companion_uuid is not None
+
+    response = client.post(
+        f"/guests/{companion_uuid}/companion_answer", json=companion_answer_2
+    )
+
+    assert response.status_code == 403
 
 
-# gość może zupadować odp dla kompaniona
-# gość nie moze zupdejtowac odp dla kompaniona po terminie
+def test_get_guests():
+    test_utils.create_user(client=client, user=user_1)
+    user1_token = test_utils.login_user(client=client, user=user_1)
+    response = test_utils.create_event(client, event_1, user1_token)
 
-# gość nie może najpierw zaupdatować odpowiedzi dla kompaniona potem dla siebie
-# jeśli odp goscia to false, gosc nie moze dac odp za kompaniona
-# jesli gośc nie ma companiona to nie moze zupdatować jego odpowiedzi
-# jesli gośc daje answer false to nie musi podawać menu?
-# read guests dziala
+    event_uuid = response.json()["uuid"]
+    assert event_uuid is not None
+
+    guest_1["event_uuid"] = event_uuid
+
+    response = test_utils.add_guest_to_event(client, guest_1, user1_token)
+
+    response = client.get("/guests")
+    assert response.status_code == 200
+
+    guests = response.json()
+
+    # There are 2 guests because primary guest has a companion
+    assert len(guests) == 2

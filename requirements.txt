@@ -5,3 +5,4 @@ Requests==2.32.3
 SQLAlchemy==2.0.36
 bcrypt==4.2.0
 pytest==8.3.3
+psycopg2-binary==2.9.10

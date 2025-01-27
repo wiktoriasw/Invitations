@@ -1,6 +1,6 @@
 __pycache__
 *.db
 todo.md
-.env
 notes.md
+frontend/
 db_data

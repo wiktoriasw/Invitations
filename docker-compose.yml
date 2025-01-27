@@ -1,0 +1,29 @@
+services:
+  invitations: 
+    build: 
+      context: .
+    ports: 
+      - "8000:8000"
+    networks:
+      - proxynet
+    depends_on:
+      - database
+    environment:
+      SQLALCHEMY_DATABASE_URL: postgresql://postgres:123@localhost/invitations
+
+  database:
+    image: "postgres:latest"
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: "123"
+      POSTGRES_DB: invitations
+    volumes:
+      - ./db_data:/var/lib/postgresql/data/
+    networks:
+      - proxynet
+
+networks:
+  proxynet:
+    driver: bridge

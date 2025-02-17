@@ -1,7 +1,9 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, UploadFile
 from sqlalchemy.orm import Session
+from PIL import Image
+import io
 
 from .. import schemas, utils
 from ..crud import events, guests
@@ -120,3 +122,27 @@ def read_event_stats(
         )
 
     return events.get_event_stats(db, event_uuid)
+
+@router.post("/{event_uuid}/background")
+def upload_background(
+    event_uuid: str,
+    file: UploadFile
+):
+    if file.size > 10*1024*1024:
+        raise HTTPException(status.HTTP_406_NOT_ACCEPTABLE, detail="The file is bigger than 10 MB")
+
+    if file.content_type not in ["image/webp", "image/png", "image/jpeg"]:
+        raise HTTPException(status.HTTP_406_NOT_ACCEPTABLE, detail="The file should be webp, png or jpg")
+
+    image = Image.open(file.file)
+
+    width, height = image.size
+    
+    if width < 300 or height < 300:
+        raise HTTPException(status.HTTP_406_NOT_ACCEPTABLE, detail="Image should be bigger than (300,300)")
+
+    return {
+        "filename": file.filename,
+        "size": file.size,
+        "content_type": file.content_type,
+    }

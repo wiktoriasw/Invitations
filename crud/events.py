@@ -95,3 +95,28 @@ def modify_event(
         db.commit()
 
     return db_event
+
+
+def add_background(
+    db: Session,
+    event_uuid: str,
+    ext: str,
+):
+    db_event = db.query(models.Event).filter(models.Event.uuid == event_uuid).first()
+    db_event.background_photo = ext
+    db.commit()
+    db.refresh(db_event)
+
+    return db_event
+
+
+def delete_background(
+    db: Session,
+    event_uuid: str,
+):
+    db_event = db.query(models.Event).filter(models.Event.uuid == event_uuid).first()
+    db_event.background_photo = None
+    db.commit()
+    db.refresh(db_event)
+
+    return db_event

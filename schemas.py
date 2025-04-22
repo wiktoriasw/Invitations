@@ -11,6 +11,7 @@ class EventBase(BaseModel):
     location: str
     menu: str
     decision_deadline: datetime
+    background_photo: str | None = None
 
 
 class EventCreate(EventBase):
@@ -58,6 +59,7 @@ class UserChangeRole(BaseModel):
 class User(UserBase):
     user_id: int
     events: list[Event] = []
+    role: str
 
     model_config = ConfigDict(from_attributes=True)
 

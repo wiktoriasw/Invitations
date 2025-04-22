@@ -30,6 +30,7 @@ class Event(Base):
     menu = Column(String)
     decision_deadline = Column(DateTime)
     organizer_id = Column(Integer, ForeignKey("users.user_id"))
+    background_photo = Column(String)
 
     organizer = relationship("User", back_populates="events")
     guests = relationship("Guest", back_populates="event")

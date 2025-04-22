@@ -1,39 +1,43 @@
 <head>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.19.1/cdn/themes/light.css" />
+    <link rel="stylesheet" href="./style.css" />
+    
+    <script type="module" src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.19.1/cdn/shoelace-autoloader.js"></script>
+
+    <script src="./script.js"></script>
+
     <title>Invitations</title>
-    <style>
-        button {
-            font-size: large;
-        }
-
-        .logout {
-            background-color: red;
-            font-weight: 600;
-            padding: 8px;
-            border: 1px solid pink;
-            border-radius: 3px;
-            transition: all 0.5s;
-        }
-
-        .logout:hover {
-            background-color: aqua;
-        }
-    </style>
+   
 </head>
+
 <body>
-    <button class="logout" onclick="sign_in('adam.nowak1234@mail.com', '123')">
+    <sl-button id="login" onclick="sign_in('adam.nowak1234@mail.com', '123')">
         Zaloguj się
-    </button>
+    </sl-button>
+
+    <sl-button id="logout" variant="warning" disabled onclick="log_out()">
+        Wyloguj się
+    </sl-button>
+
     <hr>
-    <button  onclick="download_users()">
+    <sl-button onclick="show_role()">
+        Pokaż rolę
+    </sl-button>
+
+    <p>
+        Rola zalogowanego użytkownika: <span id="user_role"></span>
+    </p>
+    <hr>
+    <sl-button  onclick="download_users()">
         Pobierz liczbę użytkowników
-    </button>
+    </sl-button>
     <p>
         Liczba użytkowników:<span id="user_count"></span>
     </p>
     <hr>
-    <button onclick="download_events()">
+    <sl-button onclick="download_events()">
         Pobierz wydarzenia
-    </button>
+    </sl-button>
     
     <p>
         Wydarzenia: <span id="events_list"></span>
@@ -41,133 +45,28 @@
     
 
     <hr>
-    <button onclick="download_stats()">
-        Pobierz statystyki wydarzenia
-    </button>
+    <sl-select id="select_event_uuid">
+    </sl-select>
 
-    <input type="text" id="event_stats_uuid" placeholder="event uuid">
+    <sl-button onclick="download_stats()">
+        Pobierz statystyki wydarzenia
+    </sl-button>
+      
     <p>
         Statystki: <span id="event_stats"></span>
     </p>
     <hr>
-    <button onclick="download_event_guests()">
+    <sl-button onclick="download_event_guests()">
         Pobierz gości wydarzenia
-    </button>
+    </sl-button>
 
-    <input type="text" id="event_guests_uuid" placeholder ="event_uuid">
     <p>
         Goście wydarzenia: 
         <span id="guests_list">
         </span>
     </p>
     <hr>
-    <button  class="logout" onclick="log_out()">
-        Wyloguj się
-    </button>
+    
 
 </body>
-
-<script>
-console.log("kotek");
-
-let token;
-
-// u7h67uh
-/*
-GET
-/events/{event_uuid}/stats
-*/
-
-async function download_users() {
-    const response = await fetch("http://127.0.0.1:8000/users", 
-    {headers: {
-            Authorization: `Bearer ${token}`,
-        }
-});
-    const users = await response.json();
-    document.getElementById("user_count").innerText = users.length;
-
-    console.log("pies", users);
-}
-
-async function download_events() {
-    const response = await fetch("http://127.0.0.1:8000/events",
-    {headers: {
-            Authorization: `Bearer ${token}`,
-        }
-});
-    const events = await response.json();
-    document.getElementById("events_list").innerText = "";
-
-    const ul = document.createElement("ul")
-
-    for (const event of events) {
-        const li = document.createElement("li")
-        li.innerText = `${event.name} ${event.uuid}`
-        ul.appendChild(li)
-    }
-
-    document.getElementById("events_list").appendChild(ul);
-
-    console.log(events);
-}
-
-async function sign_in(user, password) {
-    const formdata = new FormData();
-    formdata.append('username', user);
-    formdata.append('password', password);
-    const response = await fetch("http://127.0.0.1:8000/token", {
-        method: 'post',
-        body: formdata
-    });
-    const response_token = await response.json();
-    token = response_token.access_token
-    console.log("kotek", token);
-
-}
-
-async function download_stats() {
-    const event_uuid = document.getElementById("event_stats_uuid").value;
-    const response = await fetch(`http://127.0.0.1:8000/events/${event_uuid}/stats`, {
-        headers: {
-            Authorization: `Bearer ${token}`,
-        }
-    });
-    const stats = await response.json();
-    document.getElementById("event_stats").innerText = JSON.stringify(stats);
-
-}
-
-async function download_event_guests() {
-    const event_uuid = document.getElementById("event_guests_uuid").value;
-    const response = await fetch(`http://127.0.0.1:8000/events/${event_uuid}/guests`,{
-        headers: {
-            Authorization: `Bearer ${token}`,
-        }
-    });
-    const guests = await response.json();
-
-    document.getElementById("guests_list").innerText = "";
-    const ul = document.createElement("ul")
-
-    for (const guest of guests) {
-        const li = document.createElement("li")
-        li.innerText = `${guest.name} ${guest.surname}`
-        ul.appendChild(li)
-    }
-
-    document.getElementById("guests_list").appendChild(ul)
-
-
-    console.log(guests);
-
-
-}
-
-async function log_out() {
-    token = "";
-    console.log('Wylogowano użytkownika');
-}
-
-</script>
 

@@ -8,8 +8,8 @@ services:
       - proxynet
     depends_on:
       - database
-    environment:
-      SQLALCHEMY_DATABASE_URL: postgresql://postgres:123@localhost/invitations
+    # environment:
+      # SQLALCHEMY_DATABASE_URL: postgresql://postgres:123@localhost/invitations
 
   database:
     image: "postgres:latest"

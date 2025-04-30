@@ -13,6 +13,7 @@ client = TestClient(app)
 
 user_1 = {"email": "test_user", "password": "123"}
 user_2 = {"email": "test_user_2", "password": "123"}
+admin_user = {"email": "test_admin_user", "password": "123"}
 
 event_1 = {
     "name": "Spotkanie Biznesowe z Klientem",
@@ -81,9 +82,15 @@ def test_sign_in_with_wrong_password():
 def test_user_email():
     response = test_utils.create_user(client=client, user=user_1)
 
-    user_id = response.json()["user_id"]
-    response = client.get(f"/users/{user_id}")
-    assert response.status_code == 200
+    token = test_utils.login_user(client=client, user=user_1)
 
+    response = client.get(
+        "/users/me",
+        headers={
+            "Authorization": f"Bearer {token}",
+        },
+    )
+
+    assert response.status_code == 200
     assert "email" in response.json()
     assert response.json()["email"] == user_1["email"]

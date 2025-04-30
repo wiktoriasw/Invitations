@@ -2,6 +2,7 @@ import os.path
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, status
+from fastapi.responses import FileResponse
 from PIL import Image
 from sqlalchemy.orm import Session
 
@@ -170,6 +171,29 @@ def upload_background(
         "size": file.size,
         "content_type": file.content_type,
     }
+
+
+@router.get("/{event_uuid}/background")
+def get_background(
+    event_uuid: str,
+    current_user: Annotated[schemas.User, Depends(utils.get_current_user)],
+    db: Session = Depends(get_db),
+):
+    db_event = events.get_event(db, event_uuid)
+    if not db_event or db_event.organizer_id != current_user.user_id:
+        raise HTTPException(status_code=404, detail="Event not found")
+
+    file_extension = db_event.background_photo
+    if not file_extension:
+        raise HTTPException(
+            status_code=404, detail="The event does not have a background photo"
+        )
+
+    background_path = "./backgrounds"
+    file_path = os.path.join(background_path, f"{event_uuid}.{file_extension}")
+
+    if os.path.exists(file_path):
+        return FileResponse(file_path)
 
 
 @router.delete("/{event_uuid}/background")

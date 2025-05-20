@@ -20,8 +20,8 @@
     ```bash
     pip install -r requirements.txt
     ```
-
-4. Run the server with::
+4. Set up the SECRET_KEY as described in the [Configuration](#configuration) section below.
+5. Run the server with:
     ```bash
     fastapi dev main.py
     ```
@@ -35,12 +35,17 @@
 
 ## Configuration
 
-Use environment variables or `.env` file
+### Use environment variables or create `.env` file
 
-- `SECRET_KEY` - JWT Secret key - No default - You need to assign it
+- `SECRET_KEY` — JWT secret key. **No default value; you need to assign it.**
+   
     - Generate key:
         ```bash
         openssl rand -hex 32
+        ```
+    - Example: 
+        ```bash
+        SECRET_KEY=4jfjir...
         ```
 
 - `ALGORITHM` - JWT hashing algorithm - Default: `HS256`
